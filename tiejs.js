@@ -105,7 +105,9 @@
 
                 if (field.data) {
                     column.append(_addField(field.type, field.data));
-                    fieldNames.push(field.data.name);
+                    if (_findInArray(field.data.name, fieldNames) === null) {
+                        fieldNames.push({name: field.data.name, binding: ""});
+                    }
                 }
 
                 row.append(column);
