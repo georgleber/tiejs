@@ -1,4 +1,4 @@
-tiejs
+Tie.js
 =====
 
 Tie.js
