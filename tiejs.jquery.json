@@ -1,7 +1,7 @@
 {
     "name": "tiejs",
     "title": "TieJS",
-    "description": "TODO",
+    "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
     "keywords": [
         "forms",
         "validation",
