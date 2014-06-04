@@ -1,0 +1,16 @@
+{
+  "name": "tiejs",
+  "version": "0.1.0",
+  "main": "tiejs.js",
+  "homepage": "http://develman.github.io/tiejs",  
+  "description": "TODO",  
+  "authors": [
+    "Georg Henkel <georg@develman.de>"
+  ],    
+  "keywords": [
+    "forms",
+    "validation",
+    "object-binding"
+  ],
+  "license": "MIT"
+}
