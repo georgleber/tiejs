@@ -1,0 +1,21 @@
+{
+  "name": "TieJS",
+  "version": "0.1.0",
+  "homepage": "http://develman.github.io/tiejs",
+  "description": "TODO",
+  "main": "tiejs.js",
+  "keywords": [
+    "forms",
+    "validation",
+    "object-binding",
+    "javascript"
+  ],
+  "authors": [
+    "Georg Henkel <georg@develman.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ]
+}
