@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "tiejs.js",
   "homepage": "http://develman.github.io/tiejs",  
-  "description": "TODO",  
+  "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",  
   "authors": [
     "Georg Henkel <georg@develman.de>"
   ],    
