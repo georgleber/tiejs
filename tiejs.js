@@ -1,5 +1,5 @@
 // AMD support
-(function (factory) {
+(function(factory) {
     "use strict";
     if (typeof define === 'function' && define.amd) {
         // using AMD; register as anon module
@@ -80,6 +80,13 @@
                 if (field && typeof (settings.bindingSource[fieldNameData.binding]) !== 'undefined') {
                     _updateFieldData(field, settings.bindingSource, fieldNameData.binding);
                 }
+            });
+        };
+
+        this.markFieldError = function(fieldNames) {
+            $.each(fieldNames, function(index, fieldName) {
+                var field = $form.find('input[name=' + fieldName + ']');
+                _addFieldError(field);
             });
         };
 
