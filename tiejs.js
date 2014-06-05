@@ -356,4 +356,4 @@
             element.data('tiejs', new TieJS(this, options));
         });
     };
-})(jQuery);
+}));
