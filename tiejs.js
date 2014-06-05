@@ -1,3 +1,15 @@
+// AMD support
+(function (factory) {
+    "use strict";
+    if (typeof define === 'function' && define.amd) {
+        // using AMD; register as anon module
+        define(['jquery'], factory);
+    } else {
+        // no AMD; invoke directly
+        factory(jQuery);
+    }
+}
+
 (function($) {
     "use strict";
 
@@ -336,12 +348,12 @@
         {
             var element = $(this);
 
+            // check if already initialized
             if (element.data('tiejs')) {
                 return;
             }
 
-            var tiejs = new TieJS(this, options);
-            element.data('tiejs', tiejs);
+            element.data('tiejs', new TieJS(this, options));
         });
     };
 })(jQuery);
