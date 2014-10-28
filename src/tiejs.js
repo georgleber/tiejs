@@ -235,7 +235,7 @@
             formGroup.addClass("form-group");
 
             var label = data.label;
-            if (settings.showRequiredAsterisk) {
+            if (settings.showRequiredAsterisk && data.required) {
                 label += "<span class='required-sign'>*</span>";
             }
 
@@ -253,6 +253,10 @@
 
             if (data.attributes) {
                 input += " " + data.attributes;
+            }
+
+            if  (data.required) {
+                input += " required";
             }
 
             input += " />";
@@ -279,11 +283,15 @@
                 input += " " + data.attributes;
             }
 
+            if  (data.required) {
+                input += " required";
+            }
+
             input += " />";
             label.append(input);
 
             var dataLabel = data.label;
-            if (settings.showRequiredAsterisk) {
+            if (settings.showRequiredAsterisk && data.required) {
                 dataLabel += "<span class='required-sign'>*</span>";
             }
 
@@ -311,11 +319,15 @@
                 input += " " + data.attributes;
             }
 
+            if  (data.required) {
+                input += " required";
+            }
+
             input += " />";
             label.append(input);
 
             var dataLabel = data.label;
-            if (settings.showRequiredAsterisk) {
+            if (settings.showRequiredAsterisk && data.required) {
                 dataLabel += "<span class='required-sign'>*</span>";
             }
 
@@ -330,7 +342,7 @@
             formGroup.addClass("form-group");
 
             var label  = data.label;
-            if (settings.showRequiredAsterisk) {
+            if (settings.showRequiredAsterisk && data.required) {
                 label  += "<span class='required-sign'>*</span>";
             }
 
@@ -344,6 +356,10 @@
 
             if (data.attributes) {
                 select += " " + data.attributes;
+            }
+
+            if  (data.required) {
+                select += " required";
             }
 
             select += ">"
