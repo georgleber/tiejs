@@ -33,23 +33,13 @@
 
         // settings
         var settings = $.extend({
+            showRequiredAsterisk: true,
             formName: null,
             bindingSource: {},
-            onSubmit: function () {
-            }
+            onSubmit: function () {}
         }, options);
 
-        if (settings.formName) {
-            $form.attr('name', settings.formName);
-        }
-
-        $form.on('submit', function (e) {
-            e.preventDefault();
-
-            if (_validate($form, fieldNames)) {
-                settings.onSubmit();
-            }
-        });
+        _initForm();
 
         this.addFields = function (fields) {
             $.each(fields, function (index, field) {
@@ -100,6 +90,26 @@
             $.each(fieldNames, function (index, fieldName) {
                 var field = $form.find('[name=' + fieldName + ']');
                 _addFieldError(field);
+            });
+        };
+
+        function _initForm() {
+            if (settings.formName) {
+                $form.attr('name', settings.formName);
+            }
+
+            if (settings.showRequiredAsterisk) {
+                var info = $("<p class='required-info'>Mit <span class='required-sign'>*</span> markierte Felder sind Pflichtfelder</p>");
+                $form.append(info);
+            }
+
+            $form.addClass("tiejs-form");
+            $form.on('submit', function (e) {
+                e.preventDefault();
+
+                if (_validate($form, fieldNames)) {
+                    settings.onSubmit();
+                }
             });
         };
 
@@ -224,7 +234,12 @@
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
+            var label = data.label;
+            if (settings.showRequiredAsterisk) {
+                label += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
             var input = "<input type='" + type + "' name='" + data.name + "' class='form-control'";
 
             if (data.css) {
@@ -265,10 +280,14 @@
             }
 
             input += " />";
-
             label.append(input);
-            label.append(data.label);
 
+            var dataLabel = data.label;
+            if (settings.showRequiredAsterisk) {
+                dataLabel += "<span class='required-sign'>*</span>";
+            }
+
+            label.append(dataLabel);
             checkboxDiv.append(label);
 
             return checkboxDiv;
@@ -293,10 +312,14 @@
             }
 
             input += " />";
-
             label.append(input);
-            label.append(data.label);
 
+            var dataLabel = data.label;
+            if (settings.showRequiredAsterisk) {
+                dataLabel += "<span class='required-sign'>*</span>";
+            }
+
+            label.append(dataLabel);
             radioDiv.append(label);
 
             return radioDiv;
@@ -306,7 +329,12 @@
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
+            var label  = data.label;
+            if (settings.showRequiredAsterisk) {
+                label  += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
             var select = "<select name='" + data.name + "' class='form-control'" ;
 
             if (data.css) {
@@ -336,6 +364,9 @@
         };
 
         var _button = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
             var button = "<button type='button' class='btn btn-default'";
 
             if (data.css) {
@@ -344,7 +375,9 @@
             }
 
             button += ">" + data.label + "</button>";
-            return button;
+
+            formGroup.append(button);
+            return formGroup;
         };
 
         function _clearMarker($obj) {
