@@ -1,18 +1,18 @@
 /*!
-TieJS - http://develman.github.io/tiejs
-Licensed under the MIT license
+ TieJS - http://develman.github.io/tiejs
+ Licensed under the MIT license
 
-Copyright (c) 2014 Georg Henkel <georg@develman.de>
+ Copyright (c) 2014 Georg Henkel <georg@develman.de>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 // AMD support
-(function(factory) {
+(function (factory) {
     "use strict";
     if (typeof define === 'function' && define.amd) {
         // using AMD; register as anon module
@@ -23,10 +23,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 }
 
-(function($) {
+(function ($) {
     "use strict";
 
-    var TieJS = function(form, options) {
+    var TieJS = function (form, options) {
         var self = $(this);
         var $form = $(form);
         var fieldNames = [];
@@ -35,7 +35,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var settings = $.extend({
             formName: null,
             bindingSource: {},
-            onSubmit: function() {
+            onSubmit: function () {
             }
         }, options);
 
@@ -43,7 +43,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             $form.attr('name', settings.formName);
         }
 
-        $form.on('submit', function(e) {
+        $form.on('submit', function (e) {
             e.preventDefault();
 
             if (_validate($form, fieldNames)) {
@@ -51,8 +51,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
         });
 
-        this.addFields = function(fields) {
-            $.each(fields, function(index, field) {
+        this.addFields = function (fields) {
+            $.each(fields, function (index, field) {
                 if (field.data) {
                     $form.append(_addField(field.type, field.data));
                     if (_findInArray(field.data.name, fieldNames) === null) {
@@ -64,7 +64,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return this;
         };
 
-        this.addColumns = function(columns) {
+        this.addColumns = function (columns) {
             if (columns.length > 0) {
                 $form.append(_addColumns(columns, fieldNames));
             }
@@ -72,10 +72,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return this;
         };
 
-        this.addBindings = function(bindings) {
+        this.addBindings = function (bindings) {
             if (settings.bindingSource) {
-                $.each(bindings, function(index, binding) {
-                    $.each(binding, function(fieldName, property) {
+                $.each(bindings, function (index, binding) {
+                    $.each(binding, function (fieldName, property) {
                         _bind($form, settings.bindingSource, fieldName, property);
 
                         var fieldNameData = _findInArray(fieldName, fieldNames);
@@ -87,23 +87,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return this;
         };
 
-        this.reload = function() {
-            $.each(fieldNames, function(index, fieldNameData) {
-                var field = $form.find('input[name=' + fieldNameData.name + ']');
+        this.reload = function () {
+            $.each(fieldNames, function (index, fieldNameData) {
+                var field = $form.find('[name=' + fieldNameData.name + ']');
                 if (field && typeof (settings.bindingSource[fieldNameData.binding]) !== 'undefined') {
                     _updateFieldData(field, settings.bindingSource, fieldNameData.binding);
                 }
             });
         };
 
-        this.markFieldError = function(fieldNames) {
-            $.each(fieldNames, function(index, fieldName) {
-                var field = $form.find('input[name=' + fieldName + ']');
+        this.markFieldError = function (fieldNames) {
+            $.each(fieldNames, function (index, fieldName) {
+                var field = $form.find('[name=' + fieldName + ']');
                 _addFieldError(field);
             });
         };
 
-        var _addField = function(type, data) {
+        var _addField = function (type, data) {
             var field = null;
             switch (type) {
                 case 'text':
@@ -119,6 +119,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 case 'radio':
                     field = _radioField(data);
                     break;
+                case 'select':
+                    field = _selectField(data);
+                    break;
                 case 'button':
                     field = _button(data);
                     break;
@@ -127,11 +130,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return field;
         };
 
-        var _addColumns = function(columns, fieldNames) {
+        var _addColumns = function (columns, fieldNames) {
             var row = $("<div></div>");
             row.addClass("row");
 
-            $.each(columns, function(index, field) {
+            $.each(columns, function (index, field) {
                 var column = $("<div></div>");
                 column.addClass("col-md-6");
 
@@ -148,12 +151,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return row;
         };
 
-        var _bind = function($obj, bindingSource, fieldName, property) {
-            var field = $obj.find('input[name=' + fieldName + ']');
+        var _bind = function ($obj, bindingSource, fieldName, property) {
+            var field = $obj.find('[name=' + fieldName + ']');
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
                 var type = field.attr('type');
-                field.on("change", function() {
+                field.on("change", function () {
                     switch (type) {
                         case 'checkbox':
                             var value = field.is(':checked') ? 1 : 0;
@@ -161,6 +164,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                             break;
                         case 'radio':
                             var value = $obj.find('input[name=' + fieldName + ']:checked').val();
+                            bindingSource[property] = value;
+                            break;
+                        case 'select':
+                            var value = $obj.find('select[name=' + fieldName + '] option:selected').val();
                             bindingSource[property] = value;
                             break;
                         default:
@@ -172,22 +179,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
         };
 
-        var _validate = function($obj, fieldNames) {
+        var _validate = function ($obj, fieldNames) {
             _clearMarker($obj);
 
             var isValid = true;
-            $.each(fieldNames, function(index, fieldNameData) {
-                var field = $obj.find('input[name=' + fieldNameData.name + ']');
+            $.each(fieldNames, function (index, fieldNameData) {
+                var field = $obj.find('[name=' + fieldNameData.name + ']');
 
+                var value = field.val();
                 if (_hasAttribute(field, 'required')) {
-                    if (!$(field).val()) {
+                    if (!value) {
                         isValid = false;
                         _addFieldError(field);
                     }
                 }
 
-                var value = $(field).val();
-                var type = $(field).attr('type');
+                var type = field.attr('type');
                 switch (type) {
                     case 'number':
                         if (!$.isNumeric(value)) {
@@ -207,17 +214,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             });
 
             if (!isValid) {
-                var error = $("<div></div>");
-                error.addClass("alert alert-danger");
-                error.text("Bitte beheben Sie die im Formular hervorgehobenen Fehler");
-
-                $obj.prepend(error);
+                _addFormError($obj);
             }
 
             return isValid;
         };
 
-        var _defaultField = function(type, data) {
+        var _defaultField = function (type, data) {
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
@@ -243,7 +246,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return formGroup;
         };
 
-        var _checkboxField = function(data) {
+        var _checkboxField = function (data) {
             var checkboxDiv = $("<div></div>");
             checkboxDiv.addClass("checkbox");
 
@@ -271,7 +274,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return checkboxDiv;
         };
 
-        var _radioField = function(data) {
+        var _radioField = function (data) {
             var radioDiv = $("<div></div>");
             radioDiv.addClass("radio");
 
@@ -299,7 +302,40 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return radioDiv;
         };
 
-        var _button = function(data) {
+        var _selectField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
+            var select = "<select name='" + data.name + "' class='form-control'" ;
+
+            if (data.css) {
+                select = input.slice(0, -1);
+                select += " " + data.css + "'";
+            }
+
+            if (data.attributes) {
+                select += " " + data.attributes;
+            }
+
+            select += ">"
+
+            if (data.placeholder) {
+                select += "<option value='0' disabled selected>" + data.placeholder + "</option>";
+            }
+
+            if (data.options) {
+                $.each(data.options, function (idx, option) {
+                    select += "<option value='" + option.id + "'>" + option.name + "</option>";
+                });
+            }
+
+            select += "</select>";
+            formGroup.append(select);
+            return formGroup;
+        };
+
+        var _button = function (data) {
             var button = "<button type='button' class='btn btn-default'";
 
             if (data.css) {
@@ -313,7 +349,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         function _clearMarker($obj) {
             $obj.find('div.alert').remove();
-            $obj.find('.form-group').each(function(index, value) {
+            $obj.find('.form-group').each(function (index, value) {
                 $(value).removeClass('has-error has-feedback');
                 $(value).find('.form-control-feedback').remove();
             });
@@ -324,10 +360,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return typeof attr !== 'undefined' && attr !== false;
         }
 
+        function _addFormError(form) {
+            var error = $("<div></div>");
+            error.addClass("alert alert-danger");
+            error.text("Bitte beheben Sie die im Formular hervorgehobenen Fehler");
+
+            form.prepend(error);
+        }
+
         function _addFieldError(field) {
             var $formGroup = field.parent();
             $formGroup.addClass('has-error has-feedback');
-            $formGroup.append("<span class='fa fa-times form-control-feedback'></span>");
+
+            if (field.is("select")) {
+                $formGroup.append("<span class='fa fa-times form-control-feedback feedback-select'></span>");
+            } else {
+                $formGroup.append("<span class='fa fa-times form-control-feedback'></span>");
+            }
         }
 
         function _updateFieldData(field, bindingSource, property) {
@@ -363,9 +412,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         }
     };
 
-    $.fn.TieJS = function(options) {
-        return this.each(function()
-        {
+    $.fn.TieJS = function (options) {
+        return this.each(function () {
             var element = $(this);
 
             // check if already initialized
