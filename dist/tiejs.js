@@ -36,7 +36,8 @@
             showRequiredAsterisk: true,
             formName: null,
             bindingSource: {},
-            onSubmit: function () {}
+            onSubmit: function () {
+            }
         }, options);
 
         _initForm();
@@ -77,17 +78,14 @@
             return this;
         };
 
-        this.updateBindingSource = function (bindingSource) {
-            settings.bindingSource = bindingSource;
+        this.updateSettings = function (newSettings) {
+            $.extend(settings, newSettings);
             this.reload();
         };
 
         this.reload = function () {
             $.each(fieldNames, function (index, fieldNameData) {
-                var field = $form.find('[name=' + fieldNameData.name + ']');
-                if (field && typeof (settings.bindingSource[fieldNameData.binding]) !== 'undefined') {
-                    _updateFieldData(field, settings.bindingSource, fieldNameData.binding);
-                }
+                _bind($form, settings.bindingSource, fieldNameData.name, fieldNameData.binding);
             });
         };
 
