@@ -77,6 +77,11 @@
             return this;
         };
 
+        this.updateBindingSource = function (bindingSource) {
+            settings.bindingSource = bindingSource;
+            this.reload();
+        };
+
         this.reload = function () {
             $.each(fieldNames, function (index, fieldNameData) {
                 var field = $form.find('[name=' + fieldNameData.name + ']');
@@ -111,7 +116,7 @@
                     settings.onSubmit();
                 }
             });
-        };
+        }
 
         var _addField = function (type, data) {
             var field = null;
@@ -255,7 +260,7 @@
                 input += " " + data.attributes;
             }
 
-            if  (data.required) {
+            if (data.required) {
                 input += " required";
             }
 
@@ -283,7 +288,7 @@
                 input += " " + data.attributes;
             }
 
-            if  (data.required) {
+            if (data.required) {
                 input += " required";
             }
 
@@ -319,7 +324,7 @@
                 input += " " + data.attributes;
             }
 
-            if  (data.required) {
+            if (data.required) {
                 input += " required";
             }
 
@@ -341,13 +346,13 @@
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            var label  = data.label;
+            var label = data.label;
             if (settings.showRequiredAsterisk && data.required) {
-                label  += "<span class='required-sign'>*</span>";
+                label += "<span class='required-sign'>*</span>";
             }
 
             formGroup.append("<label class='control-label'>" + label + ":</label>");
-            var select = "<select name='" + data.name + "' class='form-control'" ;
+            var select = "<select name='" + data.name + "' class='form-control'";
 
             if (data.css) {
                 select = input.slice(0, -1);
@@ -358,7 +363,7 @@
                 select += " " + data.attributes;
             }
 
-            if  (data.required) {
+            if (data.required) {
                 select += " required";
             }
 
