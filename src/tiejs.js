@@ -78,6 +78,17 @@
             return this;
         };
 
+        this.captureFields = function () {
+            $form.find('.form-control').each(function (index, field) {
+                var fieldName = $(field).attr('name');
+                if (_findInArray(fieldName, fieldNames) === null) {
+                    fieldNames.push({name: fieldName, binding: ""});
+                }
+            });
+
+            return this;
+        };
+
         this.updateSettings = function (newSettings) {
             $.extend(settings, newSettings);
             this.reload();
@@ -103,7 +114,7 @@
 
             if (settings.showRequiredAsterisk) {
                 var info = $("<p class='required-info'>Mit <span class='required-sign'>*</span> markierte Felder sind Pflichtfelder</p>");
-                $form.append(info);
+                $form.prepend(info);
             }
 
             $form.addClass("tiejs-form");
@@ -169,6 +180,10 @@
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
                 var type = field.attr('type');
+                if (field.is("select")) {
+                    type = 'select';
+                }
+
                 field.on("change", function () {
                     switch (type) {
                         case 'checkbox':
@@ -201,7 +216,7 @@
 
                 var value = field.val();
                 if (_hasAttribute(field, 'required')) {
-                    if (!value) {
+                    if (!value || (field.is("select") && value == '0')) {
                         isValid = false;
                         _addFieldError(field);
                     }
@@ -210,7 +225,7 @@
                 var type = field.attr('type');
                 switch (type) {
                     case 'number':
-                        if (!$.isNumeric(value)) {
+                        if (value && !$.isNumeric(value)) {
                             isValid = false;
                             _addFieldError(field);
                         }
@@ -218,7 +233,7 @@
 
                     case 'email':
                         var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                        if (!regex.test(value)) {
+                        if (value && !regex.test(value)) {
                             isValid = false;
                             _addFieldError(field);
                         }
@@ -422,6 +437,10 @@
 
         function _addFieldError(field) {
             var $formGroup = field.parent();
+            if ($formGroup.hasClass('input-group')) {
+                $formGroup = $formGroup.parent();
+            }
+
             $formGroup.addClass('has-error has-feedback');
 
             if (field.is("select")) {
