@@ -146,6 +146,9 @@
                 case 'select':
                     field = _selectField(data);
                     break;
+                case 'color':
+                    field = _colorField(data);
+                    break;
                 case 'button':
                     field = _button(data);
                     break;
@@ -396,6 +399,53 @@
             formGroup.append(select);
             return formGroup;
         };
+
+        var _colorField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            var label = data.label;
+            if (settings.showRequiredAsterisk && data.required) {
+                label += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
+
+            var inputGroup = $("<div></div>");
+            inputGroup.addClass("input-group colorpicker");
+
+            var input = "<input type='text' name='" + data.name + "' class='form-control'";
+
+            if (data.css) {
+                input = input.slice(0, -1);
+                input += " " + data.css + "'";
+            }
+
+            if (data.placeholder) {
+                input += " placeholder='" + data.placeholder + "'";
+            }
+
+            if (data.attributes) {
+                input += " " + data.attributes;
+            }
+
+            if (data.required) {
+                input += " required";
+            }
+
+            input += " />";
+
+            var groupAddon = $("<span></span>");
+            groupAddon.addClass("input-group-addon");
+            groupAddon.html("<i></i>");
+
+            inputGroup.append(input);
+            inputGroup.append(groupAddon);
+            formGroup.append(inputGroup);
+
+            return formGroup;
+        };
+
 
         var _button = function (data) {
             var formGroup = $("<div></div>");
