@@ -135,6 +135,7 @@
                 case 'time':
                 case 'email':
                 case 'password':
+                case 'regex':
                     field = _defaultField(type, data);
                     break;
                 case 'checkbox':
@@ -242,6 +243,16 @@
                         }
                         break;
                 }
+
+                var regexStr = field.attr('data-regex');
+                if(regexStr){
+                    var regex = new RegExp(regexStr);
+                    if (value && !regex.test(value)) {
+                        isValid = false;
+                        _addFieldError(field);
+                    }
+                }
+
             });
 
             if (!isValid) {
@@ -278,6 +289,10 @@
 
             if (data.required) {
                 input += " required";
+            }
+
+            if(data.regex) {
+                input += " data-regex='" + data.regex + "'";
             }
 
             input += " />";
@@ -461,6 +476,12 @@
             button += ">" + data.label + "</button>";
 
             formGroup.append(button);
+
+            if(data.clickCB){
+                var btn = formGroup.find("button");
+                $(btn).on("click", data.clickCB);
+            }
+
             return formGroup;
         };
 
