@@ -2,7 +2,7 @@
  TieJS - http://develman.github.io/tiejs
  Licensed under the MIT license
 
- Copyright (c) 2014 Georg Henkel <georg@develman.de>
+ Copyright (c) 2014 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -138,6 +138,7 @@
                 case 'date':
                 case 'email':
                 case 'password':
+                case 'regex':
                     field = _defaultField(type, data);
                     break;
                 case 'checkbox':
@@ -248,6 +249,16 @@
                         }
                         break;
                 }
+
+                var regexStr = field.attr('data-regex');
+                if(regexStr){
+                    var regex = new RegExp(regexStr);
+                    if (value && !regex.test(value)) {
+                        isValid = false;
+                        _addFieldError(field);
+                    }
+                }
+
             });
 
             if (!isValid) {
@@ -284,6 +295,10 @@
 
             if (data.required) {
                 input += " required";
+            }
+
+            if(data.regex) {
+                input += " data-regex='" + data.regex + "'";
             }
 
             input += " />";
@@ -500,6 +515,12 @@
             button += ">" + data.label + "</button>";
 
             formGroup.append(button);
+
+            if(data.clickCB){
+                var btn = formGroup.find("button");
+                $(btn).on("click", data.clickCB);
+            }
+
             return formGroup;
         };
 

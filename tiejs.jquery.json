@@ -7,12 +7,15 @@
         "validation",
         "object-binding"
     ],
-    "version": "0.1.9",
-    "author": {
+    "version": "1.1.0",
+    "author": [{
             "name": "Georg Henkel",
             "email": "georg@develman.de",
             "url": "http://www.develman.de"
-    },
+    }, {
+        "name": "Christoph Huppertz",
+        "email": "huppertz.chr@gmail.com"
+    }],
     "licenses": [
         {
             "type": "MIT",
@@ -22,7 +25,7 @@
     "bugs": "https://github.com/Develman/tiejs/issues",
     "homepage": "http://develman.github.io/tiejs",
     "dependencies": {
-        "jquery": ">=1.9",
-        "markitup-markitup": "1.1.14"
+        "jquery": ">=2.1.1",
+        "bootstrap": ">=3.3.0"
     }
 }
