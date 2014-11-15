@@ -20,7 +20,7 @@ First create a new javascript object, which will be tied to the form.
 Adding TieJS to a form and setting user as `bindingSource`:
 
     var user = new User(); 
-    $('#form'.TieJS({bindingSource: user});
+    $('#form').TieJS({bindingSource: user});
 
 Define the fields and tie the properties of the user object to the form:
 

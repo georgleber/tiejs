@@ -95,6 +95,8 @@
         };
 
         this.reload = function () {
+            _clearMarker($form);
+
             $.each(fieldNames, function (index, fieldNameData) {
                 _bind($form, settings.bindingSource, fieldNameData.name, fieldNameData.binding);
             });
@@ -133,6 +135,7 @@
                 case 'text':
                 case 'number':
                 case 'time':
+                case 'date':
                 case 'email':
                 case 'password':
                     field = _defaultField(type, data);
@@ -148,6 +151,9 @@
                     break;
                 case 'color':
                     field = _colorField(data);
+                    break;
+                case 'longtext':
+                    field = _textareaField(data);
                     break;
                 case 'button':
                     field = _button(data);
@@ -296,8 +302,7 @@
             var input = "<input type='checkbox' name='" + data.name + "'";
 
             if (data.css) {
-                input = input.slice(0, -1);
-                input += " " + data.css + "'";
+                input += " class='" + data.css + "'";
             }
 
             if (data.attributes) {
@@ -329,11 +334,10 @@
             var label = $("<label></label>");
             label.addClass("control-label");
 
-            var input = "<input type='radio' name='" + data.name + "' value='" + data.value + "'";
+            var input = "<input type='radio' name='" + data.name + "'";
 
             if (data.css) {
-                input = input.slice(0, -1);
-                input += " " + data.css + "'";
+                input += " class='" + data.css + "'";
             }
 
             if (data.attributes) {
@@ -446,6 +450,41 @@
             return formGroup;
         };
 
+        var _textareaField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            var label = data.label;
+            if (settings.showRequiredAsterisk && data.required) {
+                label += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
+            var textarea = "<textarea name='" + data.name + "' class='form-control'";
+
+            if (data.css) {
+                textarea = textarea.slice(0, -1);
+                textarea += " " + data.css + "'";
+            }
+
+
+            if (data.placeholder) {
+                textarea += " placeholder='" + data.placeholder + "'";
+            }
+
+            if (data.attributes) {
+                textarea += " " + data.attributes;
+            }
+
+            if (data.required) {
+                textarea += " required";
+            }
+
+            textarea += "></textarea>";
+            formGroup.append(textarea);
+
+            return formGroup;
+        };
 
         var _button = function (data) {
             var formGroup = $("<div></div>");
@@ -517,7 +556,8 @@
                     break;
 
                 default:
-                    field.val(bindingSource[property]);
+                    var value = bindingSource[property];
+                    field.val(value);
             }
         }
 

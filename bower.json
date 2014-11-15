@@ -1,21 +1,25 @@
 {
-  "name": "TieJS",
-  "version": "0.1.9",
-  "homepage": "http://develman.github.io/tiejs",
-  "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
-  "main": "dist/tiejs.min.js",
-  "keywords": [
-    "forms",
-    "validation",
-    "object-binding",
-    "javascript"
-  ],
-  "authors": [
-    "Georg Henkel <georg@develman.de>"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "bower_components"
-  ]
+    "name": "tiejs",
+    "version": "1.0.0",
+    "homepage": "http://develman.github.io/tiejs",
+    "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
+    "main": "dist/tiejs.min.js",
+    "keywords": [
+        "forms",
+        "validation",
+        "object-binding",
+        "javascript"
+    ],
+    "authors": [
+        "Georg Henkel <georg@develman.de>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "jquery": ">=2.1.1",
+        "bootstrap": ">=3.3.0"
+    },
+    "ignore": [
+        "**/.*",
+        "bower_components"
+    ]
 }

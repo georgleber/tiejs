@@ -22,6 +22,7 @@
     "bugs": "https://github.com/Develman/tiejs/issues",
     "homepage": "http://develman.github.io/tiejs",
     "dependencies": {
-        "jquery": ">=1.9"
+        "jquery": ">=1.9",
+        "markitup-markitup": "1.1.14"
     }
 }
