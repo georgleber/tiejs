@@ -71,7 +71,7 @@ TieJS Angular Directive
 
 Example how to use the directive:
 
-1. include tiejs.js and tiejs-angular.js into the project
+1. include tie.js and tiejs-angular.js into the project
 2. add the directive to your angular modul
 
      var app = angular.module('testApp', ['tiejs-ang']);
