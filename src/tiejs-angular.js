@@ -10,7 +10,6 @@
 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 angular.module("tiejs-ang", [])
     .directive('tiejsForm', function () {
         return {
@@ -70,11 +69,10 @@ angular.module("tiejs-ang", [])
                 //init color picker, if we have an color field
                 var colorPickers = new Array();
                 if(colorFieldNames.length > 0){
-                    var colorpickerElements = formElem.find(".colorpicker");
+                    var colorpickerElements = formElem.find(".color");
                     for(var i=0; i < colorFieldNames.length; i++){
                         var colorpicker = $(colorpickerElements[i]).colorpicker({
-                            "format": "hex",
-                            "color": "#" + scope.bindingSource[colorFieldNames[i]]
+                            color: "#" + scope.bindingSource[colorFieldNames[i]]
                         });
                         colorpicker.on('changeColor', function (value) {
                             var code = value.color.toHex();
@@ -95,8 +93,3 @@ angular.module("tiejs-ang", [])
 
         };
     });
-
-
-
-
-
