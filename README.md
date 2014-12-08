@@ -30,7 +30,8 @@ Define the fields and tie the properties of the user object to the form:
                     label: "Benutzername",
                     name: "username",
                     placeholder: "Benutzername",
-                    attributes: "autofocus required"
+                    attributes: ["autofocus"],
+                    required: true
                 }
             }, {
                 type: "text",
@@ -52,7 +53,7 @@ Define the fields and tie the properties of the user object to the form:
                     label: "E-Mail-Adresse",
                     name: "email",
                     placeholder: "E-Mail-Adresse",
-                    attributes: "required"
+                    required: true
                 }
             }
         ]).addBindings([{
@@ -86,7 +87,8 @@ Example how to use the directive:
                 label: "Name",
                 name: "name",
                 placeholder: "Benutzername",
-                attributes: "autofocus required"
+                attributes: ["autofocus"],
+                required: true
             }
         }, {
             type: "number",
@@ -94,14 +96,14 @@ Example how to use the directive:
                 label: "Alter",
                 name: "age",
                 placeholder: "Alter",
-                attributes: "required"
+                required: true
             }
         }, {
             type: "color",
             data: {
                 label: "Lieblings-Farbe",
                 name: "wantedColor",
-                attributes: "required"
+                required: true
             }
         }];
 
@@ -112,7 +114,8 @@ Example how to use the directive:
                 label: "Start",
                 name: "start",
                 placeholder: "hh:mm",
-                attributes: "autofocus required",
+                attributes: ["autofocus"],
+                required: true,
                 regex: "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
             }
         }, {
@@ -121,7 +124,7 @@ Example how to use the directive:
                 label: "Ende",
                 name: "end",
                 placeholder: "hh:mm",
-                attributes: "required",
+                required: true,
                 regex: "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
             }
         }];
