@@ -134,8 +134,6 @@
             switch (type) {
                 case 'text':
                 case 'number':
-                case 'time':
-                case 'date':
                 case 'email':
                 case 'password':
                 case 'regex':
@@ -153,8 +151,17 @@
                 case 'color':
                     field = _colorField(data);
                     break;
+                case 'date':
+                    field = _dateField(data);
+                    break;
+                case 'time':
+                    field = _timeField(data);
+                    break;
                 case 'longtext':
                     field = _textareaField(data);
+                    break;
+                case 'wysiwyg':
+                    field = _wysiwygField(data);
                     break;
                 case 'button':
                     field = _button(data);
@@ -465,6 +472,107 @@
             return formGroup;
         };
 
+        var _dateField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            var label = data.label;
+            if (settings.showRequiredAsterisk && data.required) {
+                label += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
+
+            var inputGroup = $("<div></div>");
+            inputGroup.addClass("input-group date");
+
+            var input = "<input type='text' name='" + data.name + "' class='form-control'" + " data-date-format='" + data.format +"'";
+
+            if (data.css) {
+                input = input.slice(0, -1);
+                input += " " + data.css + "'";
+            }
+
+            if (data.placeholder) {
+                input += " placeholder='" + data.placeholder + "'";
+            }
+
+            if (data.attributes) {
+                input += " " + data.attributes;
+            }
+
+            if(data.regex) {
+                input += " data-regex='" + data.regex + "'";
+            }
+
+            if (data.required) {
+                input += " required";
+            }
+
+            input += " />";
+
+            var groupAddon = $("<span></span>");
+            groupAddon.addClass("input-group-addon");
+            groupAddon.html('<i class="fa fa-calendar"></i>');
+
+            inputGroup.append(input);
+            inputGroup.append(groupAddon);
+            formGroup.append(inputGroup);
+
+            return formGroup;
+        };
+
+        var _timeField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            var label = data.label;
+            if (settings.showRequiredAsterisk && data.required) {
+                label += "<span class='required-sign'>*</span>";
+            }
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
+
+            var inputGroup = $("<div></div>");
+            inputGroup.addClass("input-group time");
+
+            var input = "<input type='text' name='" + data.name + "' class='form-control'";
+
+            if (data.css) {
+                input = input.slice(0, -1);
+                input += " " + data.css + "'";
+            }
+
+            if (data.placeholder) {
+                input += " placeholder='" + data.placeholder + "'";
+            }
+
+            if (data.attributes) {
+                input += " " + data.attributes;
+            }
+
+            if(data.regex) {
+                input += " data-regex='" + data.regex + "'";
+            }
+
+            if (data.required) {
+                input += " required";
+            }
+
+            input += " />";
+
+            var groupAddon = $("<span></span>");
+            groupAddon.addClass("input-group-addon");
+            groupAddon.html('<i class="fa fa-clock-o"></i>');
+
+            inputGroup.append(input);
+            inputGroup.append(groupAddon);
+            formGroup.append(inputGroup);
+
+            return formGroup;
+        };
+
+
         var _textareaField = function (data) {
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
@@ -496,6 +604,43 @@
             }
 
             textarea += "></textarea>";
+            formGroup.append(textarea);
+
+            return formGroup;
+        };
+
+        var _wysiwygField = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            var label = data.label;
+            //if (settings.showRequiredAsterisk && data.required) {
+            //    label += "<span class='required-sign'>*</span>";
+            //}
+
+            formGroup.append("<label class='control-label'>" + label + ":</label>");
+            formGroup.append(getToolbarTemplate());
+
+            var textarea = "<div name='" + data.name + "' class='form-control wysiwyg'";
+
+            if (data.css) {
+                textarea = textarea.slice(0, -1);
+                textarea += " " + data.css + "'";
+            }
+
+            if (data.placeholder) {
+                textarea += " placeholder='" + data.placeholder + "'";
+            }
+
+            if (data.attributes) {
+                textarea += " " + data.attributes;
+            }
+
+            if (data.required) {
+                textarea += " required";
+            }
+
+            textarea += "></div>";
             formGroup.append(textarea);
 
             return formGroup;
@@ -591,6 +736,72 @@
             }
 
             return null;
+        }
+
+        function getToolbarTemplate(){
+return '<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="glyphicon glyphicon-font"></i><b class="caret"></b></a>' +
+'<ul class="dropdown-menu">' +
+'<li><a data-edit="fontName Serif" style="font-family:'+"'Serif'" + '>Serif</a></li>' +
+'<li><a data-edit="fontName Sans" style="font-family:'+"'Sans'" + '">Sans</a></li>' +
+'<li><a data-edit="fontName Arial" style="font-family:'+"'Arial'" + '">Arial</a></li>' +
+'<li><a data-edit="fontName Arial Black" style="font-family:'+"'Arial Black'" + '">Arial Black</a></li>' +
+'<li><a data-edit="fontName Courier" style="font-family:'+"'Courier'" + '">Courier</a></li>' +
+'<li><a data-edit="fontName Courier New" style="font-family:'+"'Courier New'" + '">Courier New</a></li>' +
+'<li><a data-edit="fontName Comic Sans MS" style="font-family:'+"'Comic Sans MS'" + '">Comic Sans MS</a></li>' +
+'<li><a data-edit="fontName Helvetica" style="font-family:'+"'Helvetica'" + '">Helvetica</a></li>' +
+'<li><a data-edit="fontName Impact" style="font-family:'+"'Impact'" + '">Impact</a></li>' +
+'<li><a data-edit="fontName Lucida Grande" style="font-family:'+"'Lucida Grande'" + '">Lucida Grande</a></li>' +
+'<li><a data-edit="fontName Lucida Sans" style="font-family:'+"'Lucida Sans'" + '">Lucida Sans</a></li>' +
+'<li><a data-edit="fontName Tahoma" style="font-family:'+"'Tahoma'" + '">Tahoma</a></li>' +
+'<li><a data-edit="fontName Times" style="font-family:'+"'Times'" + '">Times</a></li>' +
+'<li><a data-edit="fontName Times New Roman" style="font-family:'+"'Times New Roman'" + '">Times New Roman</a></li>' +
+'<li><a data-edit="fontName Verdana" style="font-family:'+"'Verdana'" + '">Verdana</a></li></ul> ' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="glyphicon glyphicon-text-height"></i>&nbsp;<b class="caret"></b></a>' +
+'<ul class="dropdown-menu">' +
+'<li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>' +
+'<li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>' +
+'<li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>' +
+'</ul>' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="glyphicon glyphicon-bold"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="glyphicon glyphicon-italic"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="glyphicon glyphicon-text-width"></i></a>' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="glyphicon glyphicon-list"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="glyphicon glyphicon-list-alt"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="glyphicon glyphicon-indent-left"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="glyphicon glyphicon-indent-right"></i></a>' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary" data-edit="justifyleft" title="" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="glyphicon glyphicon-align-left"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="justifycenter" title="" data-original-title="Center (Ctrl/Cmd+E)"><i class="glyphicon glyphicon-align-center"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="justifyright" title="" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="glyphicon glyphicon-align-right"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="justifyfull" title="" data-original-title="Justify (Ctrl/Cmd+J)"><i class="glyphicon glyphicon-align-justify"></i></a>' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Hyperlink"><i class="glyphicon glyphicon-link"></i></a>' +
+'<div class="dropdown-menu input-append">' +
+'<input class="span2" placeholder="URL" type="text" data-edit="createLink">' +
+'<button class="btn" type="button">Add</button>' +
+'</div>' +
+'<a class="btn btn-xs btn-primary" data-edit="unlink" title="" data-original-title="Remove Hyperlink"><i class="glyphicon glyphicon-remove"></i></a>' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary" title="" id="pictureBtn" data-original-title="Insert picture (or just drag &amp; drop)"><i class="glyphicon glyphicon-picture"></i></a>' +
+'<input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" style="opacity: 0; position: absolute; top: 0px; left: 0px; width: 37px; height: 30px;">' +
+'</div>' +
+'<div class="btn-group">' +
+'<a class="btn btn-xs btn-primary" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="glyphicon glyphicon-backward"></i></a>' +
+'<a class="btn btn-xs btn-primary" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="glyphicon glyphicon-forward"></i></a>' +
+'</div>' +
+'</div>';
+
         }
     };
 
