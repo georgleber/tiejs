@@ -98,7 +98,8 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                             });
                             colorpicker.on('changeColor', function (value) {
                                 var code = value.color.toHex();
-                                scope.bindingSource[colorFieldNames[i]] = code.replace("#", "");
+                                var fieldName = $(event.currentTarget).find("input").attr("name");
+                                scope.bindingSource[fieldName] = code.replace("#", "");
                             });
                             colorPickers.push(colorpicker);
                         }
@@ -116,6 +117,12 @@ angular.module("tiejs-ang", ['angular.css.injector'])
 
                                 daysOfWeekDisabled:[0] //disable sunday
                             });
+
+                            datepicker.on('dp.change', function (event) {
+                                var fieldName = $(event.currentTarget).find("input").attr("name");
+                                scope.bindingSource[fieldName] = event.date.format("DD.MM.YYYY");
+                            });
+
                             datePickers.push(datepicker);
                         }
                     }
