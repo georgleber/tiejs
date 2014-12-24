@@ -79,7 +79,7 @@
         };
 
         this.captureFields = function () {
-            $form.find('.form-control').each(function (index, field) {
+            $form.find(':inut:not(button)').each(function (index, field) {
                 var fieldName = $(field).attr('name');
                 if (_findInArray(fieldName, fieldNames) === null) {
                     fieldNames.push({name: fieldName, binding: ""});
