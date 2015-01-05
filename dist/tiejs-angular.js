@@ -40,6 +40,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     var dateFieldNames = new Array();
                     var timeFieldNames = new Array();
                     var wysiwygFieldNames = new Array();
+                    var tagFieldNames = new Array();
 
                     var checkIfDataHasSpecialField = function (fieldData) {
                         fieldData.forEach(function (item) {
@@ -55,6 +56,9 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                     break;
                                 case "wysiwyg":
                                     addSpecifiedFieldToArray(item, wysiwygFieldNames);
+                                    break;
+                                case "tags":
+                                    addSpecifiedFieldToArray(item, tagFieldNames);
                                     break;
                             }
                         });
@@ -96,8 +100,8 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                             var colorpicker = $(colorpickerElements[i]).colorpicker({
                                 color: "#" + scope.bindingSource[colorFieldNames[i]]
                             });
-                            colorpicker.on('changeColor', function (value) {
-                                var code = value.color.toHex();
+                            colorpicker.on('changeColor', function (event) {
+                                var code = event.color.toHex();
                                 var fieldName = $(event.currentTarget).find("input").attr("name");
                                 scope.bindingSource[fieldName] = code.replace("#", "");
                             });
@@ -109,7 +113,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     var datePickers = new Array();
                     if (dateFieldNames.length > 0) {
                         var datepickerElements = formElem.find(".date");
-                        for (var i = 0; i < datepickerElements.length; i++) {
+                        for (var i = 0; i < dateFieldNames.length; i++) {
                             var datepicker = $(datepickerElements[i]).datetimepicker({
                                 language: 'de',
                                 pickTime: false,
@@ -131,7 +135,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     var timePickers = new Array();
                     if (timeFieldNames.length > 0) {
                         var timepickerElements = formElem.find(".time");
-                        for (var i = 0; i < timepickerElements.length; i++) {
+                        for (var i = 0; i < timeFieldNames.length; i++) {
                             var clockpicker = $(timepickerElements[i]).clockpicker({
                                 placement: 'bottom',
                                 align: 'left',
@@ -141,31 +145,71 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         }
                     }
 
-                    //init WYSIWYG Textarea addon https://github.com/samclarke/SCEditor
+                    //init WYSIWYG Textarea http://mindmup.github.io/bootstrap-wysiwyg/
                     var editorPickers = new Array();
                     if (wysiwygFieldNames.length > 0) {
                         var editorPickerElements = formElem.find(".wysiwyg");
-                        for (var i = 0; i < editorPickerElements.length; i++) {
+                        for (var i = 0; i < wysiwygFieldNames.length; i++) {
                             var editorpicker = $(editorPickerElements[i]).wysiwyg();
                             $(editorPickerElements[i]).css('overflow', 'scroll');
                             $(editorPickerElements[i]).css('min-height', '400px');
                             editorPickers.push(editorpicker);
+
+                            editorpicker.on('keydown', function (event) {
+                                var fieldName = $(event.currentTarget).attr("name");
+                                scope.bindingSource[fieldName] = editorpicker.html();
+                            });
+                        }
+                    }
+
+                    var getOptionsFromField = function(tagFieldName){
+                        var options = null;
+                        scope.fields.forEach(function(field){
+                            field.fieldData.forEach(function(item){
+                                if(item.type === "tags" && item.data.name === tagFieldName){
+                                    options = item.data.options;
+                                    return options;
+                                }
+                            });
+                        });
+                        return options;
+                    };
+
+                    //init TAG input field https://github.com/alxlit/bootstrap-chosen
+                    var tagFields = new Array();
+                    if (tagFieldNames.length > 0) {
+                        var tagElements = formElem.find(".tags");
+                        for (var i = 0; i < tagFieldNames.length; i++) {
+                            var tagField = $(tagElements[i]).chosen({width: "100%"});
+
+                            tagField.change(function(event, changedObj){
+                                var fieldName = $(event.currentTarget).attr("name");
+                                var options = getOptionsFromField(fieldName);
+                                if(changedObj.selected){
+                                    scope.bindingSource[fieldName].push(options[Number(changedObj.selected)-1]);
+                                } else {
+                                    var idx = scope.bindingSource[fieldName].indexOf(options[Number(changedObj.deselected)-1]);
+                                    scope.bindingSource[fieldName].splice(idx, 1);
+                                }
+                            });
+
+                            tagFields.push(tagField);
                         }
                     }
 
                     // load plugin css styles
                     if(cssInjector){
                         if(colorPickers.length > 0){
-                            //cssInjector.add("/bower_components/mjolnic-bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css");
                             cssInjector.add("/public/js/lib/mjolnic-bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css");
                         }
                         if(datePickers.length > 0){
-                            //cssInjector.add("/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.css");
                             cssInjector.add("/public/js/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css");
                         }
                         if(timePickers.length > 0){
-                            //cssInjector.add("/bower_components/clockpicker/dist/bootstrap-clockpicker.min.css");
                             cssInjector.add("/public/js/lib/clockpicker/dist/bootstrap-clockpicker.min.css");
+                        }
+                        if(tagFields.length > 0){
+                            cssInjector.add("/public/js/lib/chosen/chosen.css");
                         }
                     }
 
