@@ -91,7 +91,7 @@
         };
 
         this.captureFields = function () {
-            $form.find(':inut:not(button)').each(function (index, field) {
+            $form.find(':input:not(:button)').each(function (index, field) {
                 var fieldName = $(field).attr('name');
                 if (_findInArray(fieldName, fieldNames) === null) {
                     fieldNames.push({name: fieldName, binding: ""});
@@ -114,11 +114,13 @@
             });
         };
 
-        this.markFieldError = function (fieldNames) {
+        this.markFieldError = function (fieldNames, errorMessage) {
             $.each(fieldNames, function (index, fieldName) {
                 var field = $form.find('[name=' + fieldName + ']');
                 _addFieldError(field);
             });
+
+            _addFormError($form, errorMessage);
         };
 
         function _initForm() {
@@ -724,12 +726,19 @@
             return typeof attr !== 'undefined' && attr !== false;
         }
 
-        function _addFormError(form) {
-            var error = $("<div></div>");
-            error.addClass("alert alert-danger");
-            error.text("Bitte beheben Sie die im Formular hervorgehobenen Fehler");
+        function _addFormError(form, message) {
+            var error = $(".formerror");
+            if(error.length == 0) {
+                error = $("<div></div>");
+                error.addClass("formerror alert alert-danger");
+                form.prepend(error);
+            }
 
-            form.prepend(error);
+            if (message === undefined) {
+                error.text("Bitte beheben Sie die im Formular hervorgehobenen Fehler");
+            } else {
+                error.text(message);
+            }
         }
 
         function _addFieldError(field) {
