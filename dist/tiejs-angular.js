@@ -145,35 +145,34 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         }
                     }
 
-                    //init WYSIWYG Textarea http://mindmup.github.io/bootstrap-wysiwyg/
+                    //init WYSIWYG Textarea "summernote" : https://github.com/summernote/summernote  (old:)http://mindmup.github.io/bootstrap-wysiwyg/
                     var editorPickers = new Array();
                     if (wysiwygFieldNames.length > 0) {
                         var editorPickerElements = formElem.find(".wysiwyg");
                         for (var i = 0; i < wysiwygFieldNames.length; i++) {
-                            var editorpicker = $(editorPickerElements[i]).wysiwyg();
-                            $(editorPickerElements[i]).css('overflow', 'scroll');
-                            $(editorPickerElements[i]).css('min-height', '400px');
-                            editorPickers.push(editorpicker);
+                            var editorpicker = $(editorPickerElements[i]).summernote({
+                                height: 400,
+                                onkeydown: function(e) {
+                                    scope.bindingSource[fieldName] = $('#summernote').code();
+                                },
+                                toolbar: [
+                                    //[groupname, [button list]]
 
-                            editorpicker.on('keydown', function (event) {
-                                var fieldName = $(event.currentTarget).attr("name");
-                                scope.bindingSource[fieldName] = editorpicker.html();
+                                    ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                                    ['font', ['strikethrough']],
+                                    ['fontsize', ['fontsize']],
+                                    ['color', ['color']],
+                                    ['para', ['ul', 'ol', 'paragraph']],
+                                    ['height', ['height']],
+                                ]
                             });
+                            editorPickers.push(editorpicker);
+                            //editorpicker.on('keydown', function (event) {
+                            //    scope.bindingSource[fieldName] = $('#summernote').code();
+                            //});
                         }
                     }
 
-                    var getOptionsFromField = function(tagFieldName){
-                        var options = null;
-                        scope.fields.forEach(function(field){
-                            field.fieldData.forEach(function(item){
-                                if(item.type === "tags" && item.data.name === tagFieldName){
-                                    options = item.data.options;
-                                    return options;
-                                }
-                            });
-                        });
-                        return options;
-                    };
 
                     //init TAG input field https://github.com/alxlit/bootstrap-chosen
                     var tagFields = new Array();
@@ -184,11 +183,14 @@ angular.module("tiejs-ang", ['angular.css.injector'])
 
                             tagField.change(function(event, changedObj){
                                 var fieldName = $(event.currentTarget).attr("name");
-                                var options = getOptionsFromField(fieldName);
+                                var selectedOptions = $(event.currentTarget).find("option:selected");
                                 if(changedObj.selected){
-                                    scope.bindingSource[fieldName].push(options[Number(changedObj.selected)-1]);
+                                    selectedOptions.each(function(){
+                                        scope.bindingSource[fieldName].push($(this).val());
+                                    });
+                                    ;
                                 } else {
-                                    var idx = scope.bindingSource[fieldName].indexOf(options[Number(changedObj.deselected)-1]);
+                                    var idx = scope.bindingSource[fieldName].indexOf(changedObj.deselected);
                                     scope.bindingSource[fieldName].splice(idx, 1);
                                 }
                             });
@@ -211,6 +213,10 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         if(tagFields.length > 0){
                             cssInjector.add("/public/js/lib/chosen/chosen.css");
                         }
+                        if(editorPickers.length > 0){
+                            cssInjector.add("/public/js/lib/summernote/dist/summernote.css");
+                        }
+
                     }
 
                     // trigger submit from outside handler
@@ -222,7 +228,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
 
 
                 // reload tiejs form listener
-                if (scope.reloadFlag != 'undefined') {
+                if (scope.reloadFlag) {
                     scope.$watch("reloadFlag", function () {
                         $(element).find('form').children().remove(); //remove old html
                         init(scope, element, attr);

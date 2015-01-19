@@ -448,6 +448,23 @@
                 });
             }
 
+            if(data.url){ //load options from url
+                $.ajax({
+                    type: "GET",
+                    url: data.url,
+                    async: false,
+                    success: function(data, status){
+                        var dataArray = JSON.parse(data);
+                        dataArray.forEach(function(item){
+                            select += "<option value='" + item.Id + "' data-type='" + item.Type + "'>" + item.Name + "</option>";
+                        });
+                    },
+                    error: function(data, status){
+                        if(console) console.log("tiejs: error loading select options from server, status: " + status);
+                    }
+                });
+            }
+
             select += "</select>";
             formGroup.append(select);
             return formGroup;
@@ -646,8 +663,6 @@
             //}
 
             formGroup.append("<label class='control-label'>" + label + ":</label>");
-            formGroup.append(getToolbarTemplate());
-
             var textarea = "<div name='" + data.name + "' class='form-control wysiwyg'";
 
             if (data.css) {
@@ -782,72 +797,6 @@
             return null;
         }
 
-        function getToolbarTemplate() {
-            return '<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">' +
-//'<div class="btn-group">' +
-//'<a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="glyphicon glyphicon-font"></i><b class="caret"></b></a>' +
-//'<ul class="dropdown-menu">' +
-//'<li><a data-edit="fontName Serif" style="font-family:'+"'Serif'" + '>Serif</a></li>' +
-//'<li><a data-edit="fontName Sans" style="font-family:'+"'Sans'" + '">Sans</a></li>' +
-//'<li><a data-edit="fontName Arial" style="font-family:'+"'Arial'" + '">Arial</a></li>' +
-//'<li><a data-edit="fontName Arial Black" style="font-family:'+"'Arial Black'" + '">Arial Black</a></li>' +
-//'<li><a data-edit="fontName Courier" style="font-family:'+"'Courier'" + '">Courier</a></li>' +
-//'<li><a data-edit="fontName Courier New" style="font-family:'+"'Courier New'" + '">Courier New</a></li>' +
-//'<li><a data-edit="fontName Comic Sans MS" style="font-family:'+"'Comic Sans MS'" + '">Comic Sans MS</a></li>' +
-//'<li><a data-edit="fontName Helvetica" style="font-family:'+"'Helvetica'" + '">Helvetica</a></li>' +
-//'<li><a data-edit="fontName Impact" style="font-family:'+"'Impact'" + '">Impact</a></li>' +
-//'<li><a data-edit="fontName Lucida Grande" style="font-family:'+"'Lucida Grande'" + '">Lucida Grande</a></li>' +
-//'<li><a data-edit="fontName Lucida Sans" style="font-family:'+"'Lucida Sans'" + '">Lucida Sans</a></li>' +
-//'<li><a data-edit="fontName Tahoma" style="font-family:'+"'Tahoma'" + '">Tahoma</a></li>' +
-//'<li><a data-edit="fontName Times" style="font-family:'+"'Times'" + '">Times</a></li>' +
-//'<li><a data-edit="fontName Times New Roman" style="font-family:'+"'Times New Roman'" + '">Times New Roman</a></li>' +
-//'<li><a data-edit="fontName Verdana" style="font-family:'+"'Verdana'" + '">Verdana</a></li></ul> ' +
-//'</div>' +
-                '<div class="btn-group">' +
-                '<a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="glyphicon glyphicon-text-height"></i>&nbsp;<b class="caret"></b></a>' +
-                '<ul class="dropdown-menu">' +
-                '<li><a data-edit="fontSize 5"><font size="5">Header 1</font></a></li>' +
-                '<li><a data-edit="fontSize 3"><font size="3">Header 2</font></a></li>' +
-                '<li><a data-edit="fontSize 1"><font size="1">Normal</font></a></li>' +
-                '</ul>' +
-                '</div>' +
-                '<div class="btn-group">' +
-                '<a class="btn" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>' +
-                '<a class="btn" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>' +
-                '<a class="btn" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>' +
-                '<a class="btn" data-edit="strikethrough" title="" data-original-title="Strikethrough"><i class="fa fa-strikethrough"></i></a>' +
-                '</div>' +
-                '<div class="btn-group">' +
-                '<a class="btn" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="fa fa-list-ul"></i></a>' +
-                '<a class="btn" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="fa fa-list-ol"></i></a>' +
-                '<a class="btn" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a>' +
-                '<a class="btn" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="fa fa-indent"></i></a>' +
-                '</div>' +
-//'<div class="btn-group">' +
-//'<a class="btn" data-edit="justifyleft" title="" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="glyphicon glyphicon-align-left"></i></a>' +
-//'<a class="btn" data-edit="justifycenter" title="" data-original-title="Center (Ctrl/Cmd+E)"><i class="glyphicon glyphicon-align-center"></i></a>' +
-//'<a class="btn" data-edit="justifyright" title="" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="glyphicon glyphicon-align-right"></i></a>' +
-//'<a class="btn" data-edit="justifyfull" title="" data-original-title="Justify (Ctrl/Cmd+J)"><i class="glyphicon glyphicon-align-justify"></i></a>' +
-//'</div>' +
-                '<div class="btn-group">' +
-                '<a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Hyperlink"><i class="fa fa-link"></i></a>' +
-                '<div class="dropdown-menu input-append">' +
-                '<input class="span2" placeholder="URL" type="text" data-edit="createLink">' +
-                '<button class="btn" type="button">Add</button>' +
-                '</div>' +
-                '<a class="btn" data-edit="unlink" title="" data-original-title="Remove Hyperlink"><i class="fa fa-unlink"></i></a>' +
-                '</div>' +
-//'<div class="btn-group">' +
-//'<a class="btn" title="" id="pictureBtn" data-original-title="Insert picture (or just drag &amp; drop)"><i class="glyphicon glyphicon-picture"></i></a>' +
-//'<input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" style="opacity: 0; position: absolute; top: 0px; left: 0px; width: 37px; height: 30px;">' +
-//'</div>' +
-                '<div class="btn-group">' +
-                '<a class="btn" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-reply"></i></a>' +
-                '<a class="btn" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-share"></i></a>' +
-                '</div>' +
-                '</div>';
-
-        }
     };
 
     $.fn.TieJS = function (options) {
