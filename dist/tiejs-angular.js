@@ -36,11 +36,11 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                 };
 
                 var init = function (scope, element, attr) {
-                    var colorFieldNames = new Array();
-                    var dateFieldNames = new Array();
-                    var timeFieldNames = new Array();
-                    var wysiwygFieldNames = new Array();
-                    var tagFieldNames = new Array();
+                    var colorFieldNames = [];
+                    var dateFieldNames = [];
+                    var timeFieldNames = [];
+                    var wysiwygFieldNames = [];
+                    var tagFieldNames = [];
 
                     var checkIfDataHasSpecialField = function (fieldData) {
                         fieldData.forEach(function (item) {
@@ -91,9 +91,8 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     });
                     tiejsForm.addBindings(scope.bindings);
 
-
                     //init color picker addon, if color field is available
-                    var colorPickers = new Array();
+                    var colorPickers = [];
                     if (colorFieldNames.length > 0) {
                         var colorpickerElements = formElem.find(".color");
                         for (var i = 0; i < colorFieldNames.length; i++) {
@@ -110,7 +109,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     }
 
                     //init date picker addon, if color field is available
-                    var datePickers = new Array();
+                    var datePickers = [];
                     if (dateFieldNames.length > 0) {
                         var datepickerElements = formElem.find(".date");
                         for (var i = 0; i < dateFieldNames.length; i++) {
@@ -132,7 +131,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                     }
 
                     //init date picker addon, if color field is available
-                    var timePickers = new Array();
+                    var timePickers = [];
                     if (timeFieldNames.length > 0) {
                         var timepickerElements = formElem.find(".time");
                         for (var i = 0; i < timeFieldNames.length; i++) {
@@ -140,24 +139,27 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                 placement: 'bottom',
                                 align: 'left',
                                 autoclose: 'true'
+                            }).find("input").change(function() {
+                                var fieldName = $(this).attr("name");
+                                scope.bindingSource[fieldName] = $(this).val();
                             });
+
                             timePickers.push(datepicker);
                         }
                     }
 
                     //init WYSIWYG Textarea "summernote" : https://github.com/summernote/summernote  (old:)http://mindmup.github.io/bootstrap-wysiwyg/
-                    var editorPickers = new Array();
+                    var editorPickers = [];
                     if (wysiwygFieldNames.length > 0) {
                         var editorPickerElements = formElem.find(".wysiwyg");
                         for (var i = 0; i < wysiwygFieldNames.length; i++) {
                             var editorpicker = $(editorPickerElements[i]).summernote({
                                 height: 400,
-                                onkeydown: function(e) {
+                                onkeydown: function(event) {
+                                    var fieldName = $(event.currentTarget).parent().prev("div.wysiwyg").attr("name");
                                     scope.bindingSource[fieldName] = $('#summernote').code();
                                 },
                                 toolbar: [
-                                    //[groupname, [button list]]
-
                                     ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
                                     ['font', ['strikethrough']],
                                     ['fontsize', ['fontsize']],
@@ -166,16 +168,13 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                     ['height', ['height']],
                                 ]
                             });
+
                             editorPickers.push(editorpicker);
-                            //editorpicker.on('keydown', function (event) {
-                            //    scope.bindingSource[fieldName] = $('#summernote').code();
-                            //});
                         }
                     }
 
-
                     //init TAG input field https://github.com/alxlit/bootstrap-chosen
-                    var tagFields = new Array();
+                    var tagFields = [];
                     if (tagFieldNames.length > 0) {
                         var tagElements = formElem.find(".tags");
                         for (var i = 0; i < tagFieldNames.length; i++) {
@@ -188,7 +187,6 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                     selectedOptions.each(function(){
                                         scope.bindingSource[fieldName].push($(this).val());
                                     });
-                                    ;
                                 } else {
                                     var idx = scope.bindingSource[fieldName].indexOf(changedObj.deselected);
                                     scope.bindingSource[fieldName].splice(idx, 1);
@@ -224,8 +222,8 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         formElem.trigger('submit');
                     });
                 };
-                init(scope, element, attr);
 
+                init(scope, element, attr);
 
                 // reload tiejs form listener
                 if (scope.reloadFlag) {
