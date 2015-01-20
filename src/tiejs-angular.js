@@ -157,7 +157,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                 height: 400,
                                 onkeydown: function(event) {
                                     var fieldName = $(event.currentTarget).parent().prev("div.wysiwyg").attr("name");
-                                    scope.bindingSource[fieldName] = $('#summernote').code();
+                                    scope.bindingSource[fieldName] = $(this).code();
                                 },
                                 toolbar: [
                                     ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
