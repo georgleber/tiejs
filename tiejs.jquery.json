@@ -7,7 +7,7 @@
         "validation",
         "object-binding"
     ],
-    "version": "2.1.4",
+    "version": "2.2.0",
     "author": [{
             "name": "Georg Henkel",
             "email": "georg@develman.de",
