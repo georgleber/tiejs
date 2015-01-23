@@ -783,7 +783,7 @@
                     } else {
                         var items = new Array();
                         bindingSource[property].forEach(function(item){
-                            items.push(item.id);
+                            items.push(item);
                         });
                         field.val(items);
                     }
