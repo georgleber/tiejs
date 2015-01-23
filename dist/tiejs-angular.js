@@ -155,7 +155,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         for (var i = 0; i < wysiwygFieldNames.length; i++) {
                             var editorpicker = $(editorPickerElements[i]).summernote({
                                 height: 400,
-                                onkeydown: function(event) {
+                                onblur: function(event) {
                                     var fieldName = $(event.currentTarget).parent().prev("div.wysiwyg").attr("name");
                                     scope.bindingSource[fieldName] = $(this).code();
                                 },
