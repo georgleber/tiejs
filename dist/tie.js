@@ -213,7 +213,7 @@
             var field = $obj.find('[name=' + fieldName + ']');
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
-              //  var type = field.attr('type');
+                //  var type = field.attr('type');
                 if (field.is("select")) {
                     field.attr('type', 'select');
                 }
@@ -783,7 +783,7 @@
                     } else {
                         var items = new Array();
                         bindingSource[property].forEach(function(item){
-                            items.push(item.id);
+                            items.push(item);
                         });
                         field.val(items);
                     }
