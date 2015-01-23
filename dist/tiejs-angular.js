@@ -115,6 +115,7 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         for (var i = 0; i < dateFieldNames.length; i++) {
                             var datepicker = $(datepickerElements[i]).datetimepicker({
                                 locale: 'de',
+                                format: 'DD.MM.YYYY',
                                 showTodayButton: true
                             });
 
