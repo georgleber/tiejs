@@ -169,6 +169,9 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                                 ]
                             });
 
+                            var fieldName = $(editorPickerElements[i]).attr("name");
+                            editorpicker.code(scope.bindingSource[fieldName]);
+
                             editorPickers.push(editorpicker);
                         }
                     }
