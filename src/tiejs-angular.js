@@ -114,11 +114,8 @@ angular.module("tiejs-ang", ['angular.css.injector'])
                         var datepickerElements = formElem.find(".date");
                         for (var i = 0; i < dateFieldNames.length; i++) {
                             var datepicker = $(datepickerElements[i]).datetimepicker({
-                                language: 'de',
-                                pickTime: false,
-                                showToday: true,
-
-                                daysOfWeekDisabled:[0] //disable sunday
+                                locale: 'de',
+                                showTodayButton: true
                             });
 
                             datepicker.on('dp.change', function (event) {
