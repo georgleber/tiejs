@@ -68,7 +68,7 @@
                 $.each(bindings, function (index, binding) {
                     $.each(binding, function (fieldName, property) {
 
-                        // check if property is chained with points -> then it is annother object in binding source
+                        // check if property is chained with points -> then it is another object in binding source
                         var binding = settings.bindingSource;
                         if (property.indexOf('.') != -1) {
                             var lastPointIdx = property.lastIndexOf('.');
@@ -221,18 +221,19 @@
                 var type = field.attr("type");
                 $obj.on("change", field, function (event, data) {
                     if (field.attr("name") === $(event.target).attr("name")) {
+                        var value;
                         switch (type) {
                             case 'checkbox':
-                                var value = field.is(':checked') ? 1 : 0;
+                                value = field.is(':checked') ? 1 : 0;
                                 bindingSource[property] = value;
                                 break;
                             case 'radio':
-                                var value = $obj.find('input[name=' + fieldName + ']:checked').val();
+                                value = $obj.find('input[name=' + fieldName + ']:checked').val();
                                 bindingSource[property] = value;
                                 break;
                             case 'select':
                                 if (! $(event.target).hasClass("tags")) { //only for single select fields
-                                    var value = $obj.find('select[name=' + fieldName + '] option:selected').val();
+                                    value = $obj.find('select[name=' + fieldName + '] option:selected').val();
                                     bindingSource[property] = value;
                                 }
                                 break;
@@ -261,6 +262,7 @@
                     }
                 }
 
+                var regex;
                 var type = field.attr('type');
                 switch (type) {
                     case 'number':
@@ -271,7 +273,7 @@
                         break;
 
                     case 'email':
-                        var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         if (value && !regex.test(value)) {
                             isValid = false;
                             _addFieldError(field);
@@ -281,7 +283,7 @@
 
                 var regexStr = field.attr('data-regex');
                 if (regexStr) {
-                    var regex = new RegExp(regexStr);
+                    regex = new RegExp(regexStr);
                     if (value && !regex.test(value)) {
                         isValid = false;
                         _addFieldError(field);
@@ -418,8 +420,9 @@
             var classes = "'form-control'";
             if (isTagSelectField) {
                 classes = "'form-control tags chosen-select' multiple";
-                if (data.placeholder)
-                    classes += " data-placeholder='" + data.placeholder + "'"
+                if (data.placeholder) {
+                    classes += " data-placeholder='" + data.placeholder + "'";
+                }
             }
 
             formGroup.append("<label class='control-label'>" + label + ":</label>");
@@ -438,7 +441,7 @@
                 select += " required";
             }
 
-            select += ">"
+            select += ">";
 
             if (data.placeholder && !isTagSelectField) {
                 select += "<option value='0' disabled selected>" + data.placeholder + "</option>";
@@ -728,7 +731,7 @@
 
         function _addFormError(form, message) {
             var error = $(".formerror");
-            if(error.length == 0) {
+            if(error.length === 0) {
                 error = $("<div></div>");
                 error.addClass("formerror alert alert-danger");
                 form.prepend(error);
@@ -761,7 +764,7 @@
             switch (type) {
                 case 'checkbox':
                     var state = bindingSource[property];
-                    if (state == 0) {
+                    if (state === 0) {
                         field.prop('checked', false);
                     } else {
                         field.prop('checked', true);
@@ -781,7 +784,7 @@
                             }
                         });
                     } else {
-                        var items = new Array();
+                        var items = [];
                         bindingSource[property].forEach(function(item){
                             items.push(item);
                         });

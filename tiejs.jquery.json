@@ -1,31 +1,34 @@
 {
-    "name": "tiejs",
-    "title": "TieJS",
-    "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
-    "keywords": [
-        "forms",
-        "validation",
-        "object-binding"
-    ],
-    "version": "2.2.0",
-    "author": [{
-            "name": "Georg Henkel",
-            "email": "georg@develman.de",
-            "url": "http://www.develman.de"
-    }, {
-        "name": "Christoph Huppertz",
-        "email": "huppertz.chr@gmail.com"
-    }],
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/Develman/tiejs/blob/master/LICENSE"
-        }
-    ],
-    "bugs": "https://github.com/Develman/tiejs/issues",
-    "homepage": "http://develman.github.io/tiejs",
-    "dependencies": {
-        "jquery": ">=2.1.1",
-        "bootstrap": ">=3.3.0"
+  "name": "tiejs",
+  "title": "TieJS",
+  "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
+  "keywords": [
+    "forms",
+    "validation",
+    "object-binding",
+    "javascript"
+  ],
+  "version": "3.0.0",
+  "author": [
+    {
+      "name": "Georg Henkel",
+      "email": "georg@develman.de",
+      "url": "http://www.develman.de"
+    },
+    {
+      "name": "Christoph Huppertz",
+      "email": "huppertz.chr@gmail.com"
     }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Develman/tiejs/blob/master/LICENSE"
+    }
+  ],
+  "bugs": "https://github.com/Develman/tiejs/issues",
+  "homepage": "http://develman.github.io/tiejs",
+  "dependencies": {
+    "jquery": ">=2.1.1"
+  }
 }
