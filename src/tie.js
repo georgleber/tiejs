@@ -134,7 +134,7 @@
             }
 
             $form.addClass("tiejs-form");
-            $form.one('submit', function (e) {
+            $form.on('submit', function (e) {
                 e.preventDefault();
 
                 if (_validate($form, fieldNames)) {
@@ -718,7 +718,7 @@
 
         function _clearMarker($obj) {
             $obj.find('div.alert').remove();
-            $obj.find('.form-group').each(function (index, value) {
+            $obj.find('.has-error').each(function (index, value) {
                 $(value).removeClass('has-error has-feedback');
                 $(value).find('.form-control-feedback').remove();
             });
