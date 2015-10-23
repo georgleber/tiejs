@@ -151,6 +151,7 @@
                 case 'email':
                 case 'password':
                 case 'regex':
+                case 'typeahead':
                     field = _defaultField(type, data);
                     break;
                 case 'checkbox':
@@ -166,13 +167,13 @@
                     field = _selectField(data, true);
                     break;
                 case 'color':
-                    field = _colorField(data);
+                    field = _defaultAddonField('color', data);
                     break;
                 case 'date':
-                    field = _dateField(data);
+                    field = _defaultAddonField('date', data);
                     break;
                 case 'time':
-                    field = _timeField(data);
+                    field = _defaultAddonField('time', data);
                     break;
                 case 'longtext':
                     field = _textareaField(data);
@@ -232,7 +233,7 @@
                                 bindingSource[property] = value;
                                 break;
                             case 'select':
-                                if (! $(event.target).hasClass("tags")) { //only for single select fields
+                                if (!$(event.target).hasClass("tags")) { //only for single select fields
                                     value = $obj.find('select[name=' + fieldName + '] option:selected').val();
                                     bindingSource[property] = value;
                                 }
@@ -299,18 +300,30 @@
             return isValid;
         };
 
-        var _defaultField = function (type, data) {
-            var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
+        var _createGroupAddon = function (type) {
+            var groupAddon = $("<span></span>");
+            groupAddon.addClass("input-group-addon");
 
+            if (type === "time") {
+                groupAddon.html('<i class="fa fa-clock-o"></i>');
+            } else if (type === "calendar") {
+                groupAddon.html('<i class="fa fa-calendar"></i>');
+            } else {
+                groupAddon.html("<i></i>");
+            }
+            return groupAddon;
+        };
+
+        var _addLabel = function (formGroup, data) {
             var label = data.label;
             if (settings.showRequiredAsterisk && data.required) {
                 label += "<span class='required-sign'>*</span>";
             }
-
             formGroup.append("<label class='control-label'>" + label + ":</label>");
-            var input = "<input type='" + type + "' name='" + data.name + "' class='form-control'";
+            return formGroup;
+        };
 
+        var _addNeededOptions = function (input, data) {
             if (data.css) {
                 input = input.slice(0, -1);
                 input += " " + data.css + "'";
@@ -332,8 +345,47 @@
                 input += " data-regex='" + data.regex + "'";
             }
 
+            if(data.elemdata){
+                input += " data-elemdata='" + JSON.stringify(data.elemdata) + "'";
+            }
+
+            return input;
+        };
+
+        var _defaultField = function (type, data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+            formGroup = _addLabel(formGroup, data);
+
+            var input = "<input type='" + type + "' name='" + data.name + "' class='form-control'";
+            input = _addNeededOptions(input, data);
             input += " />";
+
             formGroup.append(input);
+
+            return formGroup;
+        };
+
+        var _defaultAddonField = function (type, data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+            formGroup = _addLabel(formGroup, data);
+
+            var inputGroup = $("<div></div>");
+            inputGroup.addClass("input-group " + type);  // type = color, time, date, typeadhead
+
+            var input = "<input type='text' name='" + data.name + "' class='form-control'";
+            if (type === "date") {
+                input += " data-date-format='" + data.format + "'";
+            }
+            input = _addNeededOptions(input, data);
+            input += " />";
+
+            var groupAddon = _createGroupAddon(type);
+
+            inputGroup.append(input);
+            inputGroup.append(groupAddon);
+            formGroup.append(inputGroup);
 
             return formGroup;
         };
@@ -346,20 +398,9 @@
             label.addClass("control-label");
 
             var input = "<input type='checkbox' name='" + data.name + "'";
-
-            if (data.css) {
-                input += " class='" + data.css + "'";
-            }
-
-            if (data.attributes) {
-                input += " " + data.attributes;
-            }
-
-            if (data.required) {
-                input += " required";
-            }
-
+            input = _addNeededOptions(input, data);
             input += " />";
+
             label.append(input);
 
             var dataLabel = data.label;
@@ -381,20 +422,9 @@
             label.addClass("control-label");
 
             var input = "<input type='radio' name='" + data.name + "'";
-
-            if (data.css) {
-                input += " class='" + data.css + "'";
-            }
-
-            if (data.attributes) {
-                input += " " + data.attributes;
-            }
-
-            if (data.required) {
-                input += " required";
-            }
-
+            input = _addNeededOptions(input, data);
             input += " />";
+
             label.append(input);
 
             var dataLabel = data.label;
@@ -412,10 +442,7 @@
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            var label = data.label;
-            if (settings.showRequiredAsterisk && data.required) {
-                label += "<span class='required-sign'>*</span>";
-            }
+            formGroup = _addLabel(formGroup, data);
 
             var classes = "'form-control'";
             if (isTagSelectField) {
@@ -453,19 +480,19 @@
                 });
             }
 
-            if(data.url){ //load options from url
+            if (data.url) { //load options from url
                 $.ajax({
                     type: "GET",
                     url: data.url,
                     async: false,
-                    success: function(data, status){
+                    success: function (data, status) {
                         var dataArray = JSON.parse(data);
-                        dataArray.forEach(function(item){
+                        dataArray.forEach(function (item) {
                             select += "<option value='" + item.Id + "' data-type='" + item.Type + "'>" + item.Name + "</option>";
                         });
                     },
-                    error: function(data, status){
-                        if(console) console.log("tiejs: error loading select options from server, status: " + status);
+                    error: function (data, status) {
+                        if (console) console.log("tiejs: error loading select options from server, status: " + status);
                     }
                 });
             }
@@ -475,182 +502,16 @@
             return formGroup;
         };
 
-        var _colorField = function (data) {
-            var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
-
-            var label = data.label;
-            if (settings.showRequiredAsterisk && data.required) {
-                label += "<span class='required-sign'>*</span>";
-            }
-
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
-
-            var inputGroup = $("<div></div>");
-            inputGroup.addClass("input-group color");
-
-            var input = "<input type='text' name='" + data.name + "' class='form-control'";
-
-            if (data.css) {
-                input = input.slice(0, -1);
-                input += " " + data.css + "'";
-            }
-
-            if (data.placeholder) {
-                input += " placeholder='" + data.placeholder + "'";
-            }
-
-            if (data.attributes) {
-                input += " " + data.attributes;
-            }
-
-            if (data.required) {
-                input += " required";
-            }
-
-            input += " />";
-
-            var groupAddon = $("<span></span>");
-            groupAddon.addClass("input-group-addon");
-            groupAddon.html("<i></i>");
-
-            inputGroup.append(input);
-            inputGroup.append(groupAddon);
-            formGroup.append(inputGroup);
-
-            return formGroup;
-        };
-
-        var _dateField = function (data) {
-            var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
-
-            var label = data.label;
-            if (settings.showRequiredAsterisk && data.required) {
-                label += "<span class='required-sign'>*</span>";
-            }
-
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
-
-            var inputGroup = $("<div></div>");
-            inputGroup.addClass("input-group date");
-
-            var input = "<input type='text' name='" + data.name + "' class='form-control'" + " data-date-format='" + data.format + "'";
-
-            if (data.css) {
-                input = input.slice(0, -1);
-                input += " " + data.css + "'";
-            }
-
-            if (data.placeholder) {
-                input += " placeholder='" + data.placeholder + "'";
-            }
-
-            if (data.attributes) {
-                input += " " + data.attributes;
-            }
-
-            if (data.regex) {
-                input += " data-regex='" + data.regex + "'";
-            }
-
-            if (data.required) {
-                input += " required";
-            }
-
-            input += " />";
-
-            var groupAddon = $("<span></span>");
-            groupAddon.addClass("input-group-addon");
-            groupAddon.html('<i class="fa fa-calendar"></i>');
-
-            inputGroup.append(input);
-            inputGroup.append(groupAddon);
-            formGroup.append(inputGroup);
-
-            return formGroup;
-        };
-
-        var _timeField = function (data) {
-            var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
-
-            var label = data.label;
-            if (settings.showRequiredAsterisk && data.required) {
-                label += "<span class='required-sign'>*</span>";
-            }
-
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
-
-            var inputGroup = $("<div></div>");
-            inputGroup.addClass("input-group time");
-
-            var input = "<input type='text' name='" + data.name + "' class='form-control'";
-
-            if (data.css) {
-                input = input.slice(0, -1);
-                input += " " + data.css + "'";
-            }
-
-            if (data.placeholder) {
-                input += " placeholder='" + data.placeholder + "'";
-            }
-
-            if (data.attributes) {
-                input += " " + data.attributes;
-            }
-
-            if (data.regex) {
-                input += " data-regex='" + data.regex + "'";
-            }
-
-            if (data.required) {
-                input += " required";
-            }
-
-            input += " />";
-
-            var groupAddon = $("<span></span>");
-            groupAddon.addClass("input-group-addon");
-            groupAddon.html('<i class="fa fa-clock-o"></i>');
-
-            inputGroup.append(input);
-            inputGroup.append(groupAddon);
-            formGroup.append(inputGroup);
-
-            return formGroup;
-        };
-
-
         var _textareaField = function (data) {
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            var label = data.label;
-            if (settings.showRequiredAsterisk && data.required) {
-                label += "<span class='required-sign'>*</span>";
-            }
+            formGroup = _addLabel(formGroup, data);
 
             formGroup.append("<label class='control-label'>" + label + ":</label>");
             var textarea = "<textarea name='" + data.name + "' class='form-control'";
 
-            if (data.css) {
-                textarea = textarea.slice(0, -1);
-                textarea += " " + data.css + "'";
-            }
-
-
-            if (data.placeholder) {
-                textarea += " placeholder='" + data.placeholder + "'";
-            }
-
-            if (data.attributes) {
-                textarea += " " + data.attributes;
-            }
-
-            if (data.required) {
-                textarea += " required";
-            }
+            textarea = _addNeededOptions(input, data)
 
             textarea += "></textarea>";
             formGroup.append(textarea);
@@ -662,30 +523,11 @@
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
 
-            var label = data.label;
-            //if (settings.showRequiredAsterisk && data.required) {
-            //    label += "<span class='required-sign'>*</span>";
-            //}
+            formGroup = _addLabel(formGroup, data);
 
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
             var textarea = "<div name='" + data.name + "' class='form-control wysiwyg'";
 
-            if (data.css) {
-                textarea = textarea.slice(0, -1);
-                textarea += " " + data.css + "'";
-            }
-
-            if (data.placeholder) {
-                textarea += " placeholder='" + data.placeholder + "'";
-            }
-
-            if (data.attributes) {
-                textarea += " " + data.attributes;
-            }
-
-            if (data.required) {
-                textarea += " required";
-            }
+            textarea = _addNeededOptions(textarea, data);
 
             textarea += "></div>";
             formGroup.append(textarea);
@@ -731,7 +573,7 @@
 
         function _addFormError(form, message) {
             var error = $(".formerror");
-            if(error.length === 0) {
+            if (error.length === 0) {
                 error = $("<div></div>");
                 error.addClass("formerror alert alert-danger");
                 form.prepend(error);
@@ -777,15 +619,15 @@
 
                 case 'select':
                     if (!$(field).hasClass("tags")) {
-                        var optionArray  = field.find("option");
-                        optionArray.each(function(idx){
-                            if($(optionArray[idx]).attr("data-type") === bindingSource[property]){
+                        var optionArray = field.find("option");
+                        optionArray.each(function (idx) {
+                            if ($(optionArray[idx]).attr("data-type") === bindingSource[property]) {
                                 field.val($(optionArray[idx]).val());
                             }
                         });
                     } else {
                         var items = [];
-                        bindingSource[property].forEach(function(item){
+                        bindingSource[property].forEach(function (item) {
                             items.push(item);
                         });
                         field.val(items);
