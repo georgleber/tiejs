@@ -452,7 +452,7 @@
                 }
             }
 
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
+            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
             var select = "<select name='" + data.name + "' class=" + classes;
 
             if (data.css) {
@@ -508,10 +508,10 @@
 
             formGroup = _addLabel(formGroup, data);
 
-            formGroup.append("<label class='control-label'>" + label + ":</label>");
+            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
             var textarea = "<textarea name='" + data.name + "' class='form-control'";
 
-            textarea = _addNeededOptions(input, data)
+            textarea = _addNeededOptions(input, data);
 
             textarea += "></textarea>";
             formGroup.append(textarea);
@@ -606,10 +606,10 @@
             switch (type) {
                 case 'checkbox':
                     var state = bindingSource[property];
-                    if (state === 0) {
-                        field.prop('checked', false);
-                    } else {
+                    if (state) {
                         field.prop('checked', true);
+                    } else {
+                        field.prop('checked', false);
                     }
                     break;
 
