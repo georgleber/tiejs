@@ -8,16 +8,16 @@
     "object-binding",
     "javascript"
   ],
-  "version": "3.0.3",
+  "version": "3.0.4",
   "author": [
     {
       "name": "Georg Henkel",
-      "email": "georg@develman.de",
-      "url": "http://www.develman.de"
+      "email": "g.henkel@cgh-solutions.de",
+      "url": "http://www.cgh-solutions.de"
     },
     {
       "name": "Christoph Huppertz",
-      "email": "huppertz.chr@gmail.com"
+      "email": "c.huppertz@cgh-solutions.de"
     }
   ],
   "licenses": [

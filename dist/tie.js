@@ -306,7 +306,7 @@
 
             if (type === "time") {
                 groupAddon.html('<i class="fa fa-clock-o"></i>');
-            } else if (type === "calendar") {
+            } else if (type === "date") {
                 groupAddon.html('<i class="fa fa-calendar"></i>');
             } else {
                 groupAddon.html("<i></i>");
@@ -345,7 +345,7 @@
                 input += " data-regex='" + data.regex + "'";
             }
 
-            if(data.elemdata){
+            if (data.elemdata) {
                 input += " data-elemdata='" + JSON.stringify(data.elemdata) + "'";
             }
 
@@ -422,6 +422,11 @@
             label.addClass("control-label");
 
             var input = "<input type='radio' name='" + data.name + "'";
+
+            if (data.value) {
+                input += " value='" + data.value + "'";
+            }
+
             input = _addNeededOptions(input, data);
             input += " />";
 
@@ -452,7 +457,6 @@
                 }
             }
 
-            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
             var select = "<select name='" + data.name + "' class=" + classes;
 
             if (data.css) {
@@ -476,7 +480,11 @@
 
             if (data.options) {
                 $.each(data.options, function (idx, option) {
-                    select += "<option value='" + option.id + "' data-type='" + option.type + "'>" + option.name + "</option>";
+                    select += "<option value='" + option.id + "'";
+                    if (option.type) {
+                        select += " data-type='" + option.type + "'";
+                    }
+                    select += ">" + option.name + "</option>";
                 });
             }
 
@@ -508,10 +516,8 @@
 
             formGroup = _addLabel(formGroup, data);
 
-            formGroup.append("<label class='control-label'>" + data.label + ":</label>");
             var textarea = "<textarea name='" + data.name + "' class='form-control'";
-
-            textarea = _addNeededOptions(input, data);
+            textarea = _addNeededOptions(textarea, data);
 
             textarea += "></textarea>";
             formGroup.append(textarea);
@@ -526,7 +532,6 @@
             formGroup = _addLabel(formGroup, data);
 
             var textarea = "<div name='" + data.name + "' class='form-control wysiwyg'";
-
             textarea = _addNeededOptions(textarea, data);
 
             textarea += "></div>";
@@ -621,7 +626,12 @@
                     if (!$(field).hasClass("tags")) {
                         var optionArray = field.find("option");
                         optionArray.each(function (idx) {
-                            if ($(optionArray[idx]).attr("data-type") === bindingSource[property]) {
+                            var dataType = $(optionArray[idx]).attr("data-type");
+                            if (dataType) {
+                                if (dataType === bindingSource[property]) {
+                                    field.val($(optionArray[idx]).val());
+                                }
+                            } else if ($(optionArray[idx]).val() === bindingSource[property]) {
                                 field.val($(optionArray[idx]).val());
                             }
                         });
