@@ -35,6 +35,7 @@
         var settings = $.extend({
             showRequiredAsterisk: true,
             formName: null,
+            validationEnabled: true,
             bindingSource: {},
             onSubmit: function () {
             }
@@ -121,6 +122,16 @@
             });
 
             _addFormError($form, errorMessage);
+        };
+
+        this.enableValidation = function () {
+            _clearMarker($form);
+            settings.validationEnabled = true;
+        };
+
+        this.disableValidation = function () {
+            _clearMarker($form);
+            settings.validationEnabled = false;
         };
 
         function _initForm() {
@@ -252,6 +263,10 @@
             _clearMarker($obj);
 
             var isValid = true;
+            if (!settings.validationEnabled) {
+                return isValid;
+            }
+
             $.each(fieldNames, function (index, fieldNameData) {
                 var field = $obj.find('[name=' + fieldNameData.name + ']');
 
@@ -369,6 +384,7 @@
         var _defaultAddonField = function (type, data) {
             var formGroup = $("<div></div>");
             formGroup.addClass("form-group");
+            formGroup.addClass("addon");
             formGroup = _addLabel(formGroup, data);
 
             var inputGroup = $("<div></div>");
@@ -565,6 +581,7 @@
 
         function _clearMarker($obj) {
             $obj.find('div.alert').remove();
+            $obj.find('.error-message').hide();
             $obj.find('.has-error').each(function (index, value) {
                 $(value).removeClass('has-error has-feedback');
                 $(value).find('.form-control-feedback').remove();
@@ -604,6 +621,8 @@
             } else {
                 $formGroup.append("<span class='fa fa-times form-control-feedback'></span>");
             }
+
+            $formGroup.find('.error-message').show();
         }
 
         function _updateFieldData(field, bindingSource, property) {
