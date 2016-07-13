@@ -272,7 +272,7 @@
 
                 var value = field.val();
                 if (_hasAttribute(field, 'required')) {
-                    if (!value || (field.is("select") && value == '0')) {
+                    if (!value || (field.is("select") && value == '0') || (field.is(":checkbox") && field.prop('checked') == false)) {
                         isValid = false;
                         _addFieldError(field);
                     }
@@ -618,11 +618,13 @@
 
             if (field.is("select")) {
                 $formGroup.append("<span class='fa fa-times form-control-feedback feedback-select'></span>");
+            } else if (field.is(":checkbox")) {
+                $formGroup.append("<span class='fa fa-times form-control-feedback feedback-checkbox'></span>");
             } else {
                 $formGroup.append("<span class='fa fa-times form-control-feedback'></span>");
             }
 
-            $formGroup.find('.error-message').show();
+            $formGroup.find('.error-message').show().css("display", "inline-block");
         }
 
         function _updateFieldData(field, bindingSource, property) {
