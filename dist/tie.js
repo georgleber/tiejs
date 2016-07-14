@@ -124,6 +124,10 @@
             _addFormError($form, errorMessage);
         };
 
+        this.markFormError = function (errorMessage) {
+            _addFormError($form, errorMessage);
+        };
+
         this.enableValidation = function () {
             _clearMarker($form);
             settings.validationEnabled = true;
