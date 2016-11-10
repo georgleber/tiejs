@@ -676,7 +676,7 @@
                                 if (dataType === bindingSource[property]) {
                                     field.val($(optionArray[idx]).val());
                                 }
-                            } else if ($(optionArray[idx]).val() === bindingSource[property]) {
+                            } else if ($(optionArray[idx]).val() == bindingSource[property]) {
                                 field.val($(optionArray[idx]).val());
                             }
                         });
