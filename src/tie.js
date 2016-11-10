@@ -2,7 +2,7 @@
  TieJS - http://develman.github.io/tiejs
  Licensed under the MIT license
 
- Copyright (c) 2014 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
+ Copyright (c) 2016 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -229,11 +229,6 @@
             var field = $obj.find('[name=' + fieldName + ']');
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
-                //  var type = field.attr('type');
-                if (field.is("select")) {
-                    field.attr('type', 'select');
-                }
-
                 var type = field.attr("type");
                 $obj.on("change", field, function (event, data) {
                     if (field.attr("name") === $(event.target).attr("name")) {
@@ -252,6 +247,10 @@
                                     value = $obj.find('select[name=' + fieldName + '] option:selected').val();
                                     bindingSource[property] = value;
                                 }
+                                break;
+                            case 'wysiwyg':
+                                value = $obj.find('div[name=' + fieldName + ']').html();
+                                bindingSource[property] = value;
                                 break;
                             default:
                                 bindingSource[property] = field.val();
@@ -273,31 +272,44 @@
 
             $.each(fieldNames, function (index, fieldNameData) {
                 var field = $obj.find('[name=' + fieldNameData.name + ']');
+                var type = field.attr('type');
 
                 var value = field.val();
-                if (_isWysiwyg(field)) {
+                if (type === 'wysiwyg') {
                     value = field.html();
                 }
 
                 if (_hasAttribute(field, 'required')) {
-                    if (!value || (field.is("select") && value == '0') || (field.is(":checkbox") && field.prop('checked') == false)) {
-                        isValid = false;
-                        _addFieldError(field);
-                    } else if (field.is(":radio")) {
-                        if (!$("input[name='" + fieldNameData.name + "']").is(':checked')) {
-                            isValid = false;
-                            _addFieldError(field);
-                        }
+                    switch (type) {
+                        case 'radio':
+                        case 'checkbox':
+                            if (!value || field.prop('checked') == false) {
+                                isValid = false;
+                                _addFieldError(field);
+                            }
+                            break;
+
+                        case 'select':
+                            if (!value || value == '0') {
+                                isValid = false;
+                                _addFieldError(field);
+                            }
+                            break;
+
+                        default:
+                            if (!value) {
+                                isValid = false;
+                                _addFieldError(field);
+                            }
                     }
-                } else if (field.is(":radio") && field.closest('div').hasClass('required')) {
-                    if (!$("input[name='" + fieldNameData.name + "']").is(':checked')) {
+                } else if (type == 'radio' && field.closest('div').hasClass('required')) {
+                    if (field.prop('checked') == false) {
                         isValid = false;
                         _addFieldError(field);
                     }
                 }
 
                 var regex;
-                var type = field.attr('type');
                 switch (type) {
                     case 'number':
                         if (value && !$.isNumeric(value)) {
@@ -491,7 +503,7 @@
                 }
             }
 
-            var select = "<select name='" + data.name + "' class=" + classes;
+            var select = "<select type='select' name='" + data.name + "' class=" + classes;
 
             if (data.css) {
                 select = input.slice(0, -1);
@@ -550,7 +562,7 @@
 
             formGroup = _addLabel(formGroup, data);
 
-            var textarea = "<textarea name='" + data.name + "' class='form-control'";
+            var textarea = "<textarea type='textarea' name='" + data.name + "' class='form-control'";
             textarea = _addNeededOptions(textarea, data);
 
             textarea += "></textarea>";
@@ -565,7 +577,7 @@
 
             formGroup = _addLabel(formGroup, data);
 
-            var textarea = "<div name='" + data.name + "' class='form-control wysiwyg'";
+            var textarea = "<div type='wysiwyg' name='" + data.name + "' class='form-control wysiwyg'";
             textarea = _addNeededOptions(textarea, data);
 
             textarea += "></div>";
@@ -689,9 +701,13 @@
                     }
                     break;
 
+                case 'wysiwyg':
+                    field.html(bindingSource[property]);
+                    field.trigger("change");
+                    break;
+
                 default:
-                    var value = bindingSource[property];
-                    field.val(value);
+                    field.val(bindingSource[property]);
             }
         }
 
