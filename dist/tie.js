@@ -124,6 +124,10 @@
             _addFormError($form, errorMessage);
         };
 
+        this.markFormError = function (errorMessage) {
+            _addFormError($form, errorMessage);
+        };
+
         this.enableValidation = function () {
             _clearMarker($form);
             settings.validationEnabled = true;
@@ -276,7 +280,17 @@
                 }
 
                 if (_hasAttribute(field, 'required')) {
-                    if (!value || (field.is("select") && value == '0')) {
+                    if (!value || (field.is("select") && value == '0') || (field.is(":checkbox") && field.prop('checked') == false)) {
+                        isValid = false;
+                        _addFieldError(field);
+                    } else if (field.is(":radio")) {
+                        if (!$("input[name='" + fieldNameData.name + "']").is(':checked')) {
+                            isValid = false;
+                            _addFieldError(field);
+                        }
+                    }
+                } else if (field.is(":radio") && field.closest('div').hasClass('required')) {
+                    if (!$("input[name='" + fieldNameData.name + "']").is(':checked')) {
                         isValid = false;
                         _addFieldError(field);
                     }
@@ -617,7 +631,7 @@
         }
 
         function _addFieldError(field) {
-            var $formGroup = field.parent();
+            var $formGroup = field.is(':radio') ? field.closest('div') : field.parent();
             if ($formGroup.hasClass('input-group')) {
                 $formGroup = $formGroup.parent();
             }
@@ -626,11 +640,15 @@
 
             if (field.is("select")) {
                 $formGroup.append("<span class='fa fa-times form-control-feedback feedback-select'></span>");
+            } else if (field.is(":checkbox")) {
+                $formGroup.append("<span class='fa fa-times form-control-feedback feedback-checkbox'></span>");
+            } else if (field.is(":radio")) {
+                $formGroup.append("<span class='fa fa-times form-control-feedback feedback-radio'></span>");
             } else {
                 $formGroup.append("<span class='fa fa-times form-control-feedback'></span>");
             }
 
-            $formGroup.find('.error-message').show();
+            $formGroup.find('.error-message').show().css("display", "block");
         }
 
         function _updateFieldData(field, bindingSource, property) {
