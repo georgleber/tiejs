@@ -271,6 +271,10 @@
                 var field = $obj.find('[name=' + fieldNameData.name + ']');
 
                 var value = field.val();
+                if (_isWysiwyg(field)) {
+                    value = field.html();
+                }
+
                 if (_hasAttribute(field, 'required')) {
                     if (!value || (field.is("select") && value == '0')) {
                         isValid = false;
@@ -577,6 +581,10 @@
             }
 
             return formGroup;
+        };
+
+        var _isWysiwyg = function (field) {
+            return $(field).hasClass('wysiwyg');
         };
 
         function _clearMarker($obj) {
