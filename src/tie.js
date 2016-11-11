@@ -282,7 +282,7 @@
                 if (_hasAttribute(field, 'required')) {
                     switch (type) {
                         case 'radio':
-                            if (field.prop('checked') === false) {
+                            if (field.is(':checked') === false) {
                                 isValid = false;
                                 _addFieldError(field);
                             }
@@ -309,7 +309,7 @@
                             }
                     }
                 } else if (type == 'radio' && field.closest('div').hasClass('required')) {
-                    if (field.prop('checked') === false) {
+                    if (field.is(':checked') === false) {
                         isValid = false;
                         _addFieldError(field);
                     }
