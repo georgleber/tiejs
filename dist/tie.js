@@ -77,7 +77,7 @@
                             property = property.substr(lastPointIdx + 1);
 
                             var tmp = "settings.bindingSource." + namespace;
-                            binding = eval(tmp);
+                            binding = eval(tmp); // jshint ignore:line
                         }
 
                         _bind($form, binding, fieldName, property);
@@ -282,8 +282,14 @@
                 if (_hasAttribute(field, 'required')) {
                     switch (type) {
                         case 'radio':
+                            if (field.prop('checked') === false) {
+                                isValid = false;
+                                _addFieldError(field);
+                            }
+                            break;
+
                         case 'checkbox':
-                            if (!value || field.prop('checked') == false) {
+                            if (!value || field.prop('checked') === false) {
                                 isValid = false;
                                 _addFieldError(field);
                             }
@@ -303,7 +309,7 @@
                             }
                     }
                 } else if (type == 'radio' && field.closest('div').hasClass('required')) {
-                    if (field.prop('checked') == false) {
+                    if (field.prop('checked') === false) {
                         isValid = false;
                         _addFieldError(field);
                     }
