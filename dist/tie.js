@@ -544,11 +544,16 @@
                 $.ajax({
                     type: "GET",
                     url: data.url,
+                    dataType: "json",
                     async: false,
-                    success: function (data, status) {
-                        var dataArray = JSON.parse(data);
-                        dataArray.forEach(function (item) {
-                            select += "<option value='" + item.Id + "' data-type='" + item.Type + "'>" + item.Name + "</option>";
+                    success: function (data) {
+                        var dataArray = JSON.parse(JSON.stringify(data.result));
+                        dataArray.forEach(function (option) {
+                            select += "<option value='" + option.Id + "'";
+                            if (option.Type) {
+                                select += " data-type='" + option.Type + "'";
+                            }
+                            select += ">" + option.Name + "</option>";
                         });
                     },
                     error: function (data, status) {
@@ -613,10 +618,6 @@
             }
 
             return formGroup;
-        };
-
-        var _isWysiwyg = function (field) {
-            return $(field).hasClass('wysiwyg');
         };
 
         function _clearMarker($obj) {
