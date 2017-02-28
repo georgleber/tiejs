@@ -2,7 +2,7 @@
  TieJS - http://develman.github.io/tiejs
  Licensed under the MIT license
 
- Copyright (c) 2016 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
+ Copyright (c) 2017 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -34,8 +34,10 @@
         // settings
         var settings = $.extend({
             showRequiredAsterisk: true,
+            requiredText: "Mit <span class='required-sign'>*</span> markierte Felder sind Pflichtfelder.",
             formName: null,
             validationEnabled: true,
+            globalValidationFailedText: "Bitte beheben Sie die im Formular hervorgehobenen Fehler.",
             bindingSource: {},
             onSubmit: function () {
             }
@@ -144,7 +146,7 @@
             }
 
             if (settings.showRequiredAsterisk) {
-                var info = $("<p class='required-info'>Mit <span class='required-sign'>*</span> markierte Felder sind Pflichtfelder</p>");
+                var info = $("<p class='required-info'>" + settings.requiredText + "</p>");
                 $form.prepend(info);
             }
 
@@ -643,7 +645,7 @@
             }
 
             if (message === undefined) {
-                error.text("Bitte beheben Sie die im Formular hervorgehobenen Fehler");
+                error.text(settings.globalValidationFailedText);
             } else {
                 error.text(message);
             }
