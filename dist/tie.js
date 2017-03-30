@@ -274,7 +274,7 @@
 
             $.each(fieldNames, function (index, fieldNameData) {
                 var field = $obj.find('[name=' + fieldNameData.name + ']');
-                var type = field.attr('type');
+                var type = field.prop('type');
 
                 var value = field.val();
                 if (type === 'wysiwyg') {
@@ -297,7 +297,7 @@
                             }
                             break;
 
-                        case 'select':
+                        case 'select-one':
                             if (!value || value == '0') {
                                 isValid = false;
                                 _addFieldError(field);
