@@ -275,6 +275,9 @@
             $.each(fieldNames, function (index, fieldNameData) {
                 var field = $obj.find('[name=' + fieldNameData.name + ']');
                 var type = field.prop('type');
+                if ("undefined" === typeof type) {
+                    type = field.attr('type');
+                }
 
                 var value = field.val();
                 if (type === 'wysiwyg') {
