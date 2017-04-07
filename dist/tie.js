@@ -728,9 +728,6 @@
                 case 'file':
                     field.wrap('<form>').closest('form').get(0).reset();
                     field.unwrap();
-
-                    field.stopPropagation();
-                    field.preventDefault();
                     break;
                 default:
                     field.val(bindingSource[property]);
