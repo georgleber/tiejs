@@ -231,7 +231,11 @@
             var field = $obj.find('[name=' + fieldName + ']');
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
-                var type = field.attr("type");
+                var type = field.prop('type');
+                if ("undefined" === typeof type) {
+                    type = field.attr('type');
+                }
+
                 $obj.on("change", field, function (event, data) {
                     if (field.attr("name") === $(event.target).attr("name")) {
                         var value;
@@ -676,7 +680,11 @@
         }
 
         function _updateFieldData(field, bindingSource, property) {
-            var type = field.attr('type');
+            var type = field.prop('type');
+            if ("undefined" === typeof type) {
+                type = field.attr('type');
+            }
+
             switch (type) {
                 case 'checkbox':
                     var state = bindingSource[property];
@@ -700,7 +708,7 @@
                                 if (dataType === bindingSource[property]) {
                                     field.val($(optionArray[idx]).val());
                                 }
-                            } else if ($(optionArray[idx]).val() == bindingSource[property]) {
+                            } else if ($(optionArray[idx]).val() === bindingSource[property]) {
                                 field.val($(optionArray[idx]).val());
                             }
                         });
@@ -717,7 +725,13 @@
                     field.html(bindingSource[property]);
                     field.trigger("change");
                     break;
+                case 'file':
+                    field.wrap('<form>').closest('form').get(0).reset();
+                    field.unwrap();
 
+                    field.stopPropagation();
+                    field.preventDefault();
+                    break;
                 default:
                     field.val(bindingSource[property]);
             }
