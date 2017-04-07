@@ -1,5 +1,5 @@
 {
-  "name": "tie-js",
+  "name": "tiejs",
   "version": "3.1.8",
   "homepage": "http://develman.github.io/tiejs",
   "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
