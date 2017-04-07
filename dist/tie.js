@@ -2,7 +2,7 @@
  TieJS - http://develman.github.io/tiejs
  Licensed under the MIT license
 
- Copyright (c) 2017 Georg Henkel <georg@develman.de>, Christoph Huppertz <huppertz.chr@gmail.com>
+ Copyright (c) 2017 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -201,6 +201,9 @@
                 case 'button':
                     field = _button(data);
                     break;
+                case 'file':
+                    field = _file(data);
+                    break;
             }
 
             return field;
@@ -257,6 +260,11 @@
                             case 'wysiwyg':
                                 value = $obj.find('div[name=' + fieldName + ']').html();
                                 bindingSource[property] = value;
+                                break;
+                            case 'file':
+                                bindingSource[property] = field.prop('files')[0];
+                                var label = field.val().replace(/\\/g, '/').replace(/.*\//, '');
+                                $obj.find('input[name=' + fieldName + '_label]').val(label);
                                 break;
                             default:
                                 bindingSource[property] = field.val();
@@ -625,6 +633,46 @@
                 var btn = formGroup.find("button");
                 $(btn).on("click", data.clickCB);
             }
+
+            return formGroup;
+        };
+
+        var _file = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+            formGroup = _addLabel(formGroup, data);
+
+            var inputGroup = $("<div></div>");
+            inputGroup.addClass("input-group");
+
+            var fileInput = "<label class='input-group-btn'><span class='btn btn-success'><i class='fa fa-folder-open'></i>" +
+                data.buttonLabel + "<input type='file' name='" + data.name + "'";
+
+            if (data.accept) {
+                fileInput += " accept='" + data.accept + "'";
+            }
+
+            if (data.required) {
+                fileInput += " required";
+            }
+
+            fileInput += " style='display:none'/></span></label>";
+            inputGroup.append(fileInput);
+
+            var filenameInput = "<input type='text' class='form-control' name='" + data.name + "_label'";
+
+            if (data.placeholder) {
+                filenameInput += " placeholder='" + data.placeholder + "'";
+            }
+
+            filenameInput += "readonly/>";
+
+            $(document).on('click', 'input[name=' + data.name + '_label]', function () {
+                $(this).parents('.input-group').find(':file').click();
+            });
+
+            inputGroup.append(filenameInput);
+            formGroup.append(inputGroup);
 
             return formGroup;
         };
