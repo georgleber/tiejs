@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                banner: '/*!\n TieJS - http://develman.github.io/tiejs\n Licensed under the MIT license\n Copyright (c) 2017 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>\n */\n'
+                banner: '/*!\n TieJS - http://develman.github.io/tiejs\n Licensed under the MIT license\n Copyright (c) 2018 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>\n */\n'
             },
             build: {
                 src: 'src/tie.js',

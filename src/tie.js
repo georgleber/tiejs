@@ -2,7 +2,7 @@
  TieJS - http://develman.github.io/tiejs
  Licensed under the MIT license
 
- Copyright (c) 2017 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
+ Copyright (c) 2018 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -667,7 +667,7 @@
 
             filenameInput += "readonly/>";
 
-            $(document).on('click', 'input[name=' + data.name + '_label]', function () {
+            $(document).off('click', 'input[name=' + data.name + '_label]').on('click', 'input[name=' + data.name + '_label]', function () {
                 $(this).parents('.input-group').find(':file').click();
             });
 
