@@ -1,17 +1,17 @@
 {
   "name": "TieJS",
-  "version": "3.1.11",
-  "homepage": "http://develman.github.io/tiejs",
+  "version": "3.1.12",
+  "homepage": "https://github.com/GeorgHenkel/tiejs",
   "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
   "main": "dist/tie.min.js",
-  "author": "Georg Henkel <g.henkel@cgh-solutions.de>",
+  "author": "Georg Leber <g.leber@cgh-solutions.de>",
   "contributors": [
-    "Georg Henkel <g.henkel@cgh-solutions.de>",
+    "Georg Leber <g.leber@cgh-solutions.de>",
     "Christoph Huppertz <c.huppertz@cgh-solutions.de>"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:Develman/tiejs.git"
+    "url": "git@github.com:GeorgHenkel/tiejs.git"
   },
   "keywords": [
     "forms",

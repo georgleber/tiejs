@@ -667,6 +667,15 @@
 
             filenameInput += "readonly/>";
 
+            if (data.clearable) {
+                filenameInput += "<span class='input-group-btn'><span class='btn btn-danger clear-" + data.name + "'><i class='fa fa-trash'></i></span></span>";
+
+                $(document).off('click', '.clear-' + data.name).on('click', '.clear-' + data.name, function () {
+                    data.clearable();
+                    $form.find('input[name=' + data.name + '_label]').val('');
+                });
+            }
+
             $(document).off('click', 'input[name=' + data.name + '_label]').on('click', 'input[name=' + data.name + '_label]', function () {
                 $(this).parents('.input-group').find(':file').click();
             });
@@ -776,6 +785,7 @@
                 case 'file':
                     field.wrap('<form>').closest('form').get(0).reset();
                     field.unwrap();
+                    $form.find('input[name=' + field.prop('name') + '_label]').val(bindingSource[property]);
                     break;
                 default:
                     field.val(bindingSource[property]);

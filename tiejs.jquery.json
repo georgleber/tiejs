@@ -8,11 +8,11 @@
     "object-binding",
     "javascript"
   ],
-  "version": "3.1.11",
+  "version": "3.1.12",
   "author": [
     {
-      "name": "Georg Henkel",
-      "email": "g.henkel@cgh-solutions.de",
+      "name": "Georg Leber",
+      "email": "g.leber@cgh-solutions.de",
       "url": "http://www.cgh-solutions.de"
     },
     {
@@ -24,11 +24,11 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/Develman/tiejs/blob/master/LICENSE"
+      "url": "https://github.com/GeorgHenkel/tiejs/blob/master/LICENSE"
     }
   ],
-  "bugs": "https://github.com/Develman/tiejs/issues",
-  "homepage": "http://develman.github.io/tiejs",
+  "bugs": "https://github.com/GeorgHenkel/tiejs/issues",
+  "homepage": "https://github.com/GeorgHenkel/tiejs",
   "dependencies": {
     "jquery": ">=2.1.1"
   }
