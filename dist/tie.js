@@ -1,8 +1,8 @@
 /*!
- TieJS - http://develman.github.io/tiejs
+ TieJS - https://georghenkel.github.io/tiejs/
  Licensed under the MIT license
 
- Copyright (c) 2018 Georg Henkel <g.henkel@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
+ Copyright (c) 2018 Georg Leber <g.leber@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -776,6 +776,28 @@
                         });
                         field.val(items);
                     }
+                    break;
+
+                case 'select-one':
+                    var options = field.find("option");
+                    options.each(function (idx) {
+                        var dataType = $(options[idx]).attr("data-type");
+                        if (dataType) {
+                            if (dataType === bindingSource[property]) {
+                                field.val($(options[idx]).val());
+                            }
+                        } else if ($(options[idx]).val() === bindingSource[property]) {
+                            field.val($(options[idx]).val());
+                        }
+                    });
+                    break;
+
+                case 'select-multi':
+                    var selectedItems = [];
+                    bindingSource[property].forEach(function (item) {
+                        selectedItems.push(item);
+                    });
+                    field.val(selectedItems);
                     break;
 
                 case 'wysiwyg':
