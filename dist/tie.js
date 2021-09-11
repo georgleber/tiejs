@@ -792,7 +792,7 @@
                     });
                     break;
 
-                case 'select-multi':
+                case 'select-multiple':
                     var selectedItems = [];
                     bindingSource[property].forEach(function (item) {
                         selectedItems.push(item);
