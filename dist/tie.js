@@ -119,7 +119,7 @@
 
         this.markFieldError = function (fieldNames, errorMessage) {
             $.each(fieldNames, function (index, fieldName) {
-                var field = $form.find('[name=' + fieldName + ']');
+                var field = $form.find('[name="' + fieldName + '"]');
                 _addFieldError(field);
             });
 
@@ -204,6 +204,9 @@
                 case 'file':
                     field = _file(data);
                     break;
+                case 'image':
+                    field = _image(data);
+                    break;
             }
 
             return field;
@@ -231,7 +234,7 @@
         };
 
         var _bind = function ($obj, bindingSource, fieldName, property) {
-            var field = $obj.find('[name=' + fieldName + ']');
+            var field = $obj.find('[name="' + fieldName + '"]');
 
             if (field && typeof (bindingSource[property]) !== 'undefined') {
                 var type = field.prop('type');
@@ -248,23 +251,34 @@
                                 bindingSource[property] = value;
                                 break;
                             case 'radio':
-                                value = $obj.find('input[name=' + fieldName + ']:checked').val();
+                                value = $obj.find('input[name="' + fieldName + '"]:checked').val();
                                 bindingSource[property] = value;
                                 break;
                             case 'select':
                                 if (!$(event.target).hasClass("tags")) { //only for single select fields
-                                    value = $obj.find('select[name=' + fieldName + '] option:selected').val();
+                                    value = $obj.find('select[name="' + fieldName + '"] option:selected').val();
                                     bindingSource[property] = value;
                                 }
                                 break;
                             case 'wysiwyg':
-                                value = $obj.find('div[name=' + fieldName + ']').html();
+                                value = $obj.find('div[name="' + fieldName + '"]').html();
                                 bindingSource[property] = value;
                                 break;
                             case 'file':
-                                bindingSource[property] = field.prop('files')[0];
-                                var label = field.val().replace(/\\/g, '/').replace(/.*\//, '');
-                                $obj.find('input[name=' + fieldName + '_label]').val(label);
+                                bindingSource[property] = field.prop('files');
+
+                                $obj.find('div.file-list').children('.file').remove();
+                                $.each(field.prop('files'), function (idx, elem) {
+                                    var name = elem.name.replace(/\\/g, '/').replace(/.*\//, '');
+
+                                    var fileElement = $("<div></div>");
+                                    fileElement.addClass("file");
+                                    fileElement.attr("data-filename", name);
+                                    fileElement.append('<span class="filename">' + name + '</span>');
+                                    fileElement.append('<span class="delete"><i class="fa fa-trash"></i></span>');
+
+                                    $obj.find('div.file-list').append(fileElement);
+                                });
                                 break;
                             default:
                                 bindingSource[property] = field.val();
@@ -285,7 +299,7 @@
             }
 
             $.each(fieldNames, function (index, fieldNameData) {
-                var field = $obj.find('[name=' + fieldNameData.name + ']');
+                var field = $obj.find('[name="' + fieldNameData.name + '"]');
                 var type = field.prop('type');
                 if ("undefined" === typeof type) {
                     type = field.attr('type');
@@ -566,11 +580,19 @@
                     success: function (data) {
                         var dataArray = JSON.parse(JSON.stringify(data.result));
                         dataArray.forEach(function (option) {
-                            select += "<option value='" + option.Id + "'";
-                            if (option.Type) {
-                                select += " data-type='" + option.Type + "'";
+                            if (Object.hasOwn(option, 'Id') && Object.hasOwn(option, 'Name')) {
+                                select += "<option value='" + option.Id + "'";
+                                if (option.Type) {
+                                    select += " data-type='" + option.Type + "'";
+                                }
+                                select += ">" + option.Name + "</option>";
+                            } else if (Object.hasOwn(option, 'id') && Object.hasOwn(option, 'name')) {
+                                select += "<option value='" + option.id + "'";
+                                if (option.type) {
+                                    select += " data-type='" + option.type + "'";
+                                }
+                                select += ">" + option.name + "</option>";
                             }
-                            select += ">" + option.Name + "</option>";
                         });
                     },
                     error: function (data, status) {
@@ -639,14 +661,11 @@
 
         var _file = function (data) {
             var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
+            formGroup.addClass("form-group dropzone");
             formGroup = _addLabel(formGroup, data);
 
-            var inputGroup = $("<div></div>");
-            inputGroup.addClass("input-group");
-
-            var fileInput = "<label class='input-group-btn'><span class='btn btn-success'><i class='fa fa-folder-open'></i>" +
-                data.buttonLabel + "<input type='file' name='" + data.name + "'";
+            var fileInput = "<div class='drop-area'><div class='action'>Click to browse or drop files here</div>";
+            fileInput += "<input type='file' name='" + data.name + "'";
 
             if (data.accept) {
                 fileInput += " accept='" + data.accept + "'";
@@ -656,32 +675,96 @@
                 fileInput += " required";
             }
 
-            fileInput += " style='display:none'/></span></label>";
-            inputGroup.append(fileInput);
-
-            var filenameInput = "<input type='text' class='form-control' name='" + data.name + "_label'";
-
-            if (data.placeholder) {
-                filenameInput += " placeholder='" + data.placeholder + "'";
+            if (data.multi) {
+                fileInput += " multiple";
             }
 
-            filenameInput += "readonly/>";
+            fileInput += " style='display:none'/>";
 
+            let fileElementContainer = $("<div></div>");
+            fileElementContainer.addClass("file-list");
             if (data.clearable) {
-                filenameInput += "<span class='input-group-btn'><span class='btn btn-danger clear-" + data.name + "'><i class='fa fa-trash'></i></span></span>";
-
-                $(document).off('click', '.clear-' + data.name).on('click', '.clear-' + data.name, function () {
-                    data.clearable();
-                    $form.find('input[name=' + data.name + '_label]').val('');
-                });
+                fileElementContainer.addClass("deletable");
             }
 
-            $(document).off('click', 'input[name=' + data.name + '_label]').on('click', 'input[name=' + data.name + '_label]', function () {
-                $(this).parents('.input-group').find(':file').click();
+            formGroup.append(fileInput);
+            formGroup.append(fileElementContainer);
+
+            $(document).off('click', '.dropzone .drop-area .action').on('click', '.dropzone .drop-area .action', function () {
+                $(this).parent().find(':file').click();
             });
 
-            inputGroup.append(filenameInput);
-            formGroup.append(inputGroup);
+            $(document).off('dragenter dragover', '.dropzone .drop-area').on('dragenter dragover', '.dropzone .drop-area', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+
+            $(document).off('drop', '.dropzone .drop-area').on('drop', '.dropzone .drop-area', function (e) {
+                if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    let fileList = [];
+                    if (data.multi) {
+                        fileList.push(...e.originalEvent.dataTransfer.files);
+                    } else {
+                        const file = e.originalEvent.dataTransfer.files[0];
+                        fileList.push(file);
+                    }
+
+                    let datatransfer = new DataTransfer();
+                    $.each(fileList, function (index, file) {
+                        datatransfer.items.add(file);
+                    });
+
+                    $form.find('input[name="' + data.name + '"]')[0].files = datatransfer.files;
+                    $form.find('input[name="' + data.name + '"]').trigger('change');
+                }
+            });
+
+            $(document).off('click', '.dropzone .file-list .file .delete').on('click', '.dropzone .file-list .file .delete', function () {
+                const filename = $(this).parent().attr('data-filename');
+                const fileList = Array.from($form.find('input[name="' + data.name + '"]')[0].files);
+                const newFileList = fileList.filter((file) => file.name !== filename);
+
+                let datatransfer = new DataTransfer();
+                $.each(newFileList, function (index, file) {
+                    datatransfer.items.add(file);
+                });
+
+                if (newFileList.length === 0 && data.clearable) {
+                    data.clearable();
+                }
+
+                $form.find('input[name="' + data.name + '"]')[0].files = datatransfer.files;
+                $form.find('input[name="' + data.name + '"]').trigger('change');
+            });
+
+            return formGroup;
+        };
+
+        var _image = function (data) {
+            var formGroup = $("<div></div>");
+            formGroup.addClass("form-group");
+
+            formGroup = _addLabel(formGroup, data);
+
+            var fileInput = $("<div></div>");
+            fileInput.addClass("fileinput fileinput-new");
+            fileInput.prop("data-provides", "fileinput");
+
+            var preview = "<div class='fileinput-preview thumbnail' data-trigger='fileinput'></div>";
+            var fileInputContent = "<div class='fileinput-button'>" +
+                "<span class='btn btn-default btn-file'>" +
+                "<span class='fileinput-new'>" + data.selectLabel + "</span>" +
+                "<span class='fileinput-exists'>" + data.changeLabel + "</span>" +
+                "<input type='file' class='image' id='" + data.name + "' name='" + data.name + "' accept='image/jpeg, image/png, image/gif'/>" +
+                "</span>" +
+                "<a href='javascript:void()' class='btn btn-default fileinput-exists fileinput-delete' data-dismiss='fileinput'>" + data.removeLabel + "</a>" +
+                "</div>";
+
+            fileInput.append(preview).append(fileInputContent);
+            formGroup.append(fileInput);
 
             return formGroup;
         };
@@ -805,13 +888,32 @@
                     field.trigger("change");
                     break;
                 case 'file':
-                    field.wrap('<form>').closest('form').get(0).reset();
-                    field.unwrap();
-                    $form.find('input[name=' + field.prop('name') + '_label]').val(bindingSource[property]);
+                    if ($(field).prop("multiple")) {
+                        bindingSource[property].forEach(function (file) {
+                            const fileElement = _createFileElement(file);
+                            field.closest('.drop-area').siblings('div.file-list').append(fileElement);
+                        });
+                    } else {
+                        const file = bindingSource[property];
+                        if (file) {
+                            const fileElement = _createFileElement(file);
+                            field.closest('.drop-area').siblings('div.file-list').append(fileElement);
+                        }
+                    }
                     break;
                 default:
                     field.val(bindingSource[property]);
             }
+        }
+
+        function _createFileElement(file) {
+            const fileElement = $("<div></div>");
+            fileElement.addClass("file");
+            fileElement.attr("data-filename", file.fileName);
+            fileElement.append('<span class="filename">' + file.fileName + '</span>');
+            fileElement.append('<span class="delete"><i class="fa fa-trash"></i></span>');
+
+            return fileElement;
         }
 
         function _findInArray(value, array) {

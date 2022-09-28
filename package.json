@@ -1,6 +1,6 @@
 {
   "name": "TieJS",
-  "version": "3.1.14",
+  "version": "3.1.15",
   "homepage": "https://github.com/GeorgHenkel/tiejs",
   "description": "TieJS makes it easy to create forms via JSON and bind objects to its form fields. Furthermore it has HTML5 validation functionalities.",
   "main": "dist/tie.min.js",
@@ -24,10 +24,13 @@
     "jquery": ">=2.1.1"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "~1.1.0",
-    "grunt-contrib-copy": "~0.7.0",
-    "grunt-contrib-nodeunit": "~0.4.1",
-    "grunt-contrib-uglify": "~0.5.0"
+    "grunt": "^1.5.3",
+    "grunt-contrib-jshint": "~3.2.0",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-nodeunit": "~4.0.0",
+    "grunt-contrib-uglify": "~5.2.2"
+  },
+  "jshintConfig": {
+    "esversion": 6
   }
 }
