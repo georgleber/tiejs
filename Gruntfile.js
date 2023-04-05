@@ -9,7 +9,7 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                banner: '/*!\n TieJS - https://georghenkel.github.io/tiejs/\n Licensed under the MIT license\n Copyright (c) 2018 Georg Leber <g.leber@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>\n */\n'
+                banner: '/*!\n TieJS - https://georghenkel.github.io/tiejs/\n Licensed under the MIT license\n Copyright (c) 2023 Georg Leber <g.leber@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>\n */\n'
             },
             build: {
                 src: 'src/tie.js',
