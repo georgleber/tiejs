@@ -274,8 +274,8 @@
                                     const files = field.prop('files');
 
                                     let formData = new FormData();
-                                    if (field.multiple) {
-                                        formData.append("files[]", files);
+                                    if (field.prop("multiple")) {
+                                        [...files].forEach((file) => formData.append("files[]", file));
                                     } else {
                                         formData.append("files", files[0]);
                                     }
@@ -288,7 +288,7 @@
                                         processData: false,
                                         success: (response) => {
                                             response.forEach(file => {
-                                                if (field.multiple) {
+                                                if (field.prop("multiple")) {
                                                     bindingSource[property].push(file);
                                                 } else {
                                                     bindingSource[property] = file;
@@ -309,8 +309,6 @@
                                     // it is a file upload
                                     const files = field.prop('files');
                                     const name = [...files].map((file) => file.name).join(", ");
-
-                                    console.log(name);
 
                                     bindingSource[property] = files;
                                     bindingSource[property + "Name"] = name;
@@ -700,10 +698,10 @@
 
         var _dropzone = function (data) {
             let formGroup = $("<div></div>");
-            formGroup.addClass("form-group dropzone");
+            formGroup.addClass("form-group dropzone " + data.name);
             _addLabel(formGroup, data);
 
-            let fileInput = "<div class='drop-area'><div class='action'>Click to browse or drop files here</div>";
+            let fileInput = "<div class='drop-area'><div class='action'>" + data.browseLabel + "</div>";
             fileInput += "<input type='file' name='" + data.name + "'";
 
             if (data.accept) {
@@ -729,16 +727,16 @@
             formGroup.append(fileInput);
             formGroup.append(fileElementContainer);
 
-            $(document).off('click', '.dropzone .drop-area .action').on('click', '.dropzone .drop-area .action', function () {
+            $(document).off('click', '.dropzone.' + data.name + ' .drop-area .action').on('click', '.dropzone.' + data.name + ' .drop-area .action', function () {
                 $(this).parent().find(':file').click();
             });
 
-            $(document).off('dragenter dragover', '.dropzone .drop-area').on('dragenter dragover', '.dropzone .drop-area', function (e) {
+            $(document).off('dragenter dragover', '.dropzone.' + data.name + ' .drop-area').on('dragenter dragover', '.dropzone.' + data.name + ' .drop-area', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
             });
 
-            $(document).off('drop', '.dropzone .drop-area').on('drop', '.dropzone .drop-area', function (e) {
+            $(document).off('drop', '.dropzone.' + data.name + ' .drop-area').on('drop', '.dropzone.' + data.name + ' .drop-area', function (e) {
                 if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -761,7 +759,7 @@
                 }
             });
 
-            $(document).off('click', '.dropzone .file-list .file .delete').on('click', '.dropzone .file-list .file .delete', function () {
+            $(document).off('click', '.dropzone.' + data.name + ' .file-list .file .delete').on('click', '.dropzone.' + data.name + ' .file-list .file .delete', function () {
                 $(this).parent().remove();
 
                 if (data.handleRemove) {
@@ -954,7 +952,10 @@
                         fileList.children('.file').remove();
 
                         if ($(field).prop("multiple")) {
-                            bindingSource[property].forEach((file) => fileList.append(_createFileElement(file)));
+                            const files = bindingSource[property];
+                            if (files && files.length > 0) {
+                                files.forEach((file) => fileList.append(_createFileElement(file)));
+                            }
                         } else {
                             const file = bindingSource[property];
                             if (file) {
@@ -976,13 +977,51 @@
         }
 
         function _createFileElement(file) {
+            const icon = _mapMimeTypeToIcon(file.mimeType);
+
             const fileElement = $("<div></div>");
             fileElement.addClass("file");
             fileElement.attr("data-id", file.id);
+            fileElement.append('<span class="icon"><i class="fa ' + icon + '"></i></span>');
             fileElement.append('<span class="filename">' + file.fileName + '</span>');
             fileElement.append('<span class="delete"><i class="fa fa-trash"></i></span>');
 
             return fileElement;
+        }
+
+        function _mapMimeTypeToIcon(mimeType) {
+            let icon = "";
+            switch (mimeType) {
+                case "image/png":
+                case "image/jpeg":
+                case "image/gif":
+                    icon = "fa-file-image";
+                    break;
+
+                case "application/pdf":
+                    icon = "fa-file-pdf";
+                    break;
+
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                case "application/vnd.ms-word":
+                    icon = "fa-file-word";
+                    break;
+
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                case "text/csv":
+                case "application/vnd.ms-excel":
+                    icon = "fa-file-excel";
+                    break;
+
+                case "application/zip":
+                    icon = "fa-file-archive";
+                    break;
+
+                default:
+                    icon = "fa-file";
+            }
+
+            return icon;
         }
 
         function _findInArray(value, array) {
