@@ -2,7 +2,7 @@
  TieJS - https://georghenkel.github.io/tiejs/
  Licensed under the MIT license
 
- Copyright (c) 2018 Georg Leber <g.leber@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
+ Copyright (c) 2023 Georg Leber <g.leber@cg-solutions.de>, Christoph Huppertz <c.huppertz@cg-solutions.de>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -73,7 +73,7 @@
 
                         // check if property is chained with points -> then it is another object in binding source
                         var binding = settings.bindingSource;
-                        if (property.indexOf('.') != -1) {
+                        if (property.indexOf('.') !== -1) {
                             var lastPointIdx = property.lastIndexOf('.');
                             var namespace = property.substr(0, lastPointIdx);
                             property = property.substr(lastPointIdx + 1);
@@ -204,8 +204,8 @@
                 case 'file':
                     field = _file(data);
                     break;
-                case 'image':
-                    field = _image(data);
+                case 'dropzone':
+                    field = _dropzone(data);
                     break;
             }
 
@@ -251,7 +251,7 @@
                                 bindingSource[property] = value;
                                 break;
                             case 'radio':
-                                value = $obj.find('input[name="' + fieldName + '"]:checked').val();
+                                value = field.is(':checked') ? 1 : 0;
                                 bindingSource[property] = value;
                                 break;
                             case 'select':
@@ -265,20 +265,59 @@
                                 bindingSource[property] = value;
                                 break;
                             case 'file':
-                                bindingSource[property] = field.prop('files');
+                                var dropzoneCheck = field.parents(".dropzone");
+                                var fileUploadCheck = field.parents(".file-upload");
+                                if (dropzoneCheck.length > 0) {
+                                    // its a dropzone
+                                    const dropzone = $(dropzoneCheck[0]);
+                                    const url = dropzone.find('div.file-list').attr('data-url');
+                                    const files = field.prop('files');
 
-                                $obj.find('div.file-list').children('.file').remove();
-                                $.each(field.prop('files'), function (idx, elem) {
-                                    var name = elem.name.replace(/\\/g, '/').replace(/.*\//, '');
+                                    let formData = new FormData();
+                                    if (field.multiple) {
+                                        formData.append("files[]", files);
+                                    } else {
+                                        formData.append("files", files[0]);
+                                    }
 
-                                    var fileElement = $("<div></div>");
-                                    fileElement.addClass("file");
-                                    fileElement.attr("data-filename", name);
-                                    fileElement.append('<span class="filename">' + name + '</span>');
-                                    fileElement.append('<span class="delete"><i class="fa fa-trash"></i></span>');
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: url,
+                                        data: formData,
+                                        contentType: false,
+                                        processData: false,
+                                        success: (response) => {
+                                            response.forEach(file => {
+                                                if (field.multiple) {
+                                                    bindingSource[property].push(file);
+                                                } else {
+                                                    bindingSource[property] = file;
+                                                }
+                                            });
 
-                                    $obj.find('div.file-list').append(fileElement);
-                                });
+                                            _updateFieldData(field, bindingSource, property);
+                                        },
+                                        error: function (xhr) {
+                                            const message = xhr.responseText && JSON.parse(xhr.responseText).userMessage ?
+                                                JSON.parse(xhr.responseText).userMessage :
+                                                xhr.statusText;
+
+                                            _addFormError($obj, message);
+                                        }
+                                    });
+                                } else if (fileUploadCheck.length > 0) {
+                                    // it is a file upload
+                                    const files = field.prop('files');
+                                    const name = [...files].map((file) => file.name).join(", ");
+
+                                    console.log(name);
+
+                                    bindingSource[property] = files;
+                                    bindingSource[property + "Name"] = name;
+
+                                    _updateFieldData(field, bindingSource, property);
+                                }
+
                                 break;
                             default:
                                 bindingSource[property] = field.val();
@@ -659,12 +698,12 @@
             return formGroup;
         };
 
-        var _file = function (data) {
-            var formGroup = $("<div></div>");
+        var _dropzone = function (data) {
+            let formGroup = $("<div></div>");
             formGroup.addClass("form-group dropzone");
-            formGroup = _addLabel(formGroup, data);
+            _addLabel(formGroup, data);
 
-            var fileInput = "<div class='drop-area'><div class='action'>Click to browse or drop files here</div>";
+            let fileInput = "<div class='drop-area'><div class='action'>Click to browse or drop files here</div>";
             fileInput += "<input type='file' name='" + data.name + "'";
 
             if (data.accept) {
@@ -683,8 +722,8 @@
 
             let fileElementContainer = $("<div></div>");
             fileElementContainer.addClass("file-list");
-            if (data.clearable) {
-                fileElementContainer.addClass("deletable");
+            if (data.url) {
+                fileElementContainer.attr("data-url", data.url);
             }
 
             formGroup.append(fileInput);
@@ -723,48 +762,67 @@
             });
 
             $(document).off('click', '.dropzone .file-list .file .delete').on('click', '.dropzone .file-list .file .delete', function () {
-                const filename = $(this).parent().attr('data-filename');
-                const fileList = Array.from($form.find('input[name="' + data.name + '"]')[0].files);
-                const newFileList = fileList.filter((file) => file.name !== filename);
+                $(this).parent().remove();
 
-                let datatransfer = new DataTransfer();
-                $.each(newFileList, function (index, file) {
-                    datatransfer.items.add(file);
-                });
-
-                if (newFileList.length === 0 && data.clearable) {
-                    data.clearable();
+                if (data.handleRemove) {
+                    const attachmentId = $(this).parent().attr('data-id');
+                    data.handleRemove(attachmentId);
                 }
-
-                $form.find('input[name="' + data.name + '"]')[0].files = datatransfer.files;
-                $form.find('input[name="' + data.name + '"]').trigger('change');
             });
 
             return formGroup;
         };
 
-        var _image = function (data) {
+        var _file = function (data) {
             var formGroup = $("<div></div>");
-            formGroup.addClass("form-group");
+            formGroup.addClass("form-group file-upload");
 
             formGroup = _addLabel(formGroup, data);
 
-            var fileInput = $("<div></div>");
-            fileInput.addClass("fileinput fileinput-new");
-            fileInput.prop("data-provides", "fileinput");
+            var fileInputGroup = $("<div></div>");
+            fileInputGroup.addClass("input-group fileinput fileinput-new");
+            fileInputGroup.prop("data-provides", "fileinput");
 
-            var preview = "<div class='fileinput-preview thumbnail' data-trigger='fileinput'></div>";
-            var fileInputContent = "<div class='fileinput-button'>" +
-                "<span class='btn btn-default btn-file'>" +
-                "<span class='fileinput-new'>" + data.selectLabel + "</span>" +
-                "<span class='fileinput-exists'>" + data.changeLabel + "</span>" +
-                "<input type='file' class='image' id='" + data.name + "' name='" + data.name + "' accept='image/jpeg, image/png, image/gif'/>" +
-                "</span>" +
-                "<a href='javascript:void()' class='btn btn-default fileinput-exists fileinput-delete' data-dismiss='fileinput'>" + data.removeLabel + "</a>" +
-                "</div>";
+            var fileInputContent = $("<label></label>");
+            fileInputContent.addClass("input-group-btn btn-file");
+            fileInputContent.append("<span class='btn btn-success'>" + data.selectLabel + "</span>");
 
-            fileInput.append(preview).append(fileInputContent);
-            formGroup.append(fileInput);
+            if (data.multi) {
+                fileInputContent.append("<input type='file' id='" + data.name + "' name='" + data.name + "' accept='" + data.accept + "' multiple=''/>");
+            } else {
+                fileInputContent.append("<input type='file' id='" + data.name + "' name='" + data.name + "' accept='" + data.accept + "'/>");
+            }
+
+            var fileField = $("<div></div>");
+            fileField.addClass("form-control");
+            fileField.prop("data-trigger", "fileinput");
+            fileField.append("<span class='fileinput-filename'></span>");
+
+            var deleteButton = $("<span></span>");
+            deleteButton.addClass("input-group-btn");
+            deleteButton.append("<span class='btn btn-danger fileinput-delete' data-dismiss='fileinput'><i class='far fa-trash-alt'></i></span>");
+
+            fileInputGroup.append(fileInputContent);
+            fileInputGroup.append(fileField);
+            fileInputGroup.append(deleteButton);
+
+            $(document).off('click', '.file-upload .fileinput .fileinput-filename').on('click', '.file-upload .fileinput .fileinput-filename', function () {
+                $("#" + data.name).click();
+            });
+
+            $(document).off('click', '.file-upload .fileinput .fileinput-delete').on('click', '.file-upload .fileinput .fileinput-delete', function () {
+                const dt = new DataTransfer();
+                $("#" + data.name).files = dt.files;
+
+                const fileNameField = $(this).parents('.file-upload').find('.fileinput-filename');
+                fileNameField.text('');
+
+                if (data.handleRemove) {
+                    data.handleRemove();
+                }
+            });
+
+            formGroup.append(fileInputGroup);
 
             return formGroup;
         };
@@ -888,18 +946,29 @@
                     field.trigger("change");
                     break;
                 case 'file':
-                    if ($(field).prop("multiple")) {
-                        bindingSource[property].forEach(function (file) {
-                            const fileElement = _createFileElement(file);
-                            field.closest('.drop-area').siblings('div.file-list').append(fileElement);
-                        });
-                    } else {
-                        const file = bindingSource[property];
-                        if (file) {
-                            const fileElement = _createFileElement(file);
-                            field.closest('.drop-area').siblings('div.file-list').append(fileElement);
+                    const dropzoneCheck = field.parents(".dropzone");
+                    const fileUploadCheck = field.parents(".file-upload");
+                    if (dropzoneCheck.length > 0) {
+                        const dropzone = $(dropzoneCheck[0]);
+                        const fileList = dropzone.find('div.file-list');
+                        fileList.children('.file').remove();
+
+                        if ($(field).prop("multiple")) {
+                            bindingSource[property].forEach((file) => fileList.append(_createFileElement(file)));
+                        } else {
+                            const file = bindingSource[property];
+                            if (file) {
+                                fileList.append(_createFileElement(file));
+                            }
                         }
+                    } else if (fileUploadCheck.length > 0) {
+                        const fileUpload = $(fileUploadCheck[0]);
+                        const fileNameField = fileUpload.find('.fileinput-filename');
+                        const fileName = bindingSource[property + "Name"];
+
+                        fileNameField.text(fileName);
                     }
+
                     break;
                 default:
                     field.val(bindingSource[property]);
@@ -909,7 +978,7 @@
         function _createFileElement(file) {
             const fileElement = $("<div></div>");
             fileElement.addClass("file");
-            fileElement.attr("data-filename", file.fileName);
+            fileElement.attr("data-id", file.id);
             fileElement.append('<span class="filename">' + file.fileName + '</span>');
             fileElement.append('<span class="delete"><i class="fa fa-trash"></i></span>');
 

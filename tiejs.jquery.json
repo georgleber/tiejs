@@ -8,17 +8,17 @@
     "object-binding",
     "javascript"
   ],
-  "version": "3.1.15",
+  "version": "3.2.0",
   "author": [
     {
       "name": "Georg Leber",
       "email": "g.leber@cgh-solutions.de",
-      "url": "http://www.cgh-solutions.de"
+      "url": "https://www.cgh-solutions.de"
     },
     {
       "name": "Christoph Huppertz",
       "email": "c.huppertz@cgh-solutions.de",
-      "url": "http://www.cgh-solutions.de"
+      "url": "https://www.cgh-solutions.de"
     }
   ],
   "licenses": [
