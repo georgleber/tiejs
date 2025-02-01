@@ -995,6 +995,8 @@
                 case "image/png":
                 case "image/jpeg":
                 case "image/gif":
+                case "image/avif":
+                case "image/webp":
                     icon = "fa-file-image";
                     break;
 
